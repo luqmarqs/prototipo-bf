@@ -50,6 +50,7 @@ const landingConfig = {
     },
     { label: 'Agenda', path: '/agenda' },
     { label: 'Campanhas', path: '/campanhas' },
+    { label: 'Noticias', path: '/noticias' },
   ],
 
   tracking: {
