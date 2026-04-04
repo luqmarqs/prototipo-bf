@@ -1,0 +1,13 @@
+import { createPortal } from 'react-dom'
+
+function ModalPortal({ children }) {
+  const modalRoot = document.getElementById('modal-root')
+
+  if (!modalRoot) {
+    return null
+  }
+
+  return createPortal(children, modalRoot)
+}
+
+export default ModalPortal
