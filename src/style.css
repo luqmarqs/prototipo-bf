@@ -77,8 +77,7 @@ img {
   border-radius: 2px;
 }
 
-.social-proof .section-head h2::after,
-.stats-dark .section-head h2::after {
+.social-proof .section-head h2::after {
   background: linear-gradient(90deg, var(--color-accent-yellow, #e4ff48), var(--color-accent-mint, #81efcd));
 }
 
@@ -426,20 +425,35 @@ img {
   border-radius: 0;
 }
 
-.social-proof,
+.social-proof {
+  background-color: #140f20;
+  background-image:
+    radial-gradient(ellipse 70% 80% at 8% 50%, rgba(247, 6, 167, 0.28), transparent),
+    radial-gradient(ellipse 60% 70% at 92% 20%, rgba(102, 12, 173, 0.35), transparent),
+    radial-gradient(ellipse 50% 60% at 55% 90%, rgba(55, 36, 145, 0.4), transparent),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(129, 239, 205, 0.08), transparent);
+  color: #ffffff;
+}
+
 .stats-dark {
-  background: linear-gradient(160deg, #372491, #41085f 55%, #660cad);
+  background: transparent;
+  color: var(--color-text-dark, #16111d);
+}
+
+.social-proof .section-head h2 {
   color: #ffffff;
 }
 
-.social-proof .section-head h2,
 .stats-dark .section-head h2 {
-  color: #ffffff;
+  color: var(--color-text-dark, #16111d);
 }
 
-.social-proof .section-head p,
-.stats-dark .section-head p {
+.social-proof .section-head p {
   color: rgba(255, 255, 255, 0.78);
+}
+
+.stats-dark .section-head p {
+  color: rgba(22, 17, 29, 0.68);
 }
 
 .social-proof .hero-signatures {
@@ -450,20 +464,17 @@ img {
   color: var(--color-accent-yellow, #e4ff48);
 }
 
-.social-proof .indicator-card,
-.stats-dark .indicator-card {
+.social-proof .indicator-card {
   background: rgba(255, 255, 255, 0.1) !important;
   border-color: rgba(255, 255, 255, 0.16) !important;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2) !important;
 }
 
-.social-proof .indicator-card strong,
-.stats-dark .indicator-card strong {
+.social-proof .indicator-card strong {
   color: var(--color-accent-yellow, #e4ff48);
 }
 
-.social-proof .indicator-card span,
-.stats-dark .indicator-card span {
+.social-proof .indicator-card span {
   color: rgba(255, 255, 255, 0.75);
 }
 
@@ -1687,7 +1698,12 @@ a.event-location:hover {
 
 .site-footer {
   border-top: 0;
-  background: linear-gradient(160deg, #41085f, #372491 60%, #660cad);
+  background-color: #140f20;
+  background-image:
+    radial-gradient(ellipse 70% 80% at 8% 50%, rgba(247, 6, 167, 0.28), transparent),
+    radial-gradient(ellipse 60% 70% at 92% 20%, rgba(102, 12, 173, 0.35), transparent),
+    radial-gradient(ellipse 50% 60% at 55% 90%, rgba(55, 36, 145, 0.4), transparent),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(129, 239, 205, 0.08), transparent);
   color: #ffffff;
 }
 

@@ -14,13 +14,23 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
     }
 
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
   }, [])
 
   return (
     <header className="site-header">
       <div className="container header-row">
-        <NavLink to="/" className="brand" aria-label={`Ir para inicio - ${brandName}`}>
+        <NavLink
+          to="/"
+          className="brand"
+          aria-label={`Ir para inicio - ${brandName}`}
+          onClick={() => setOpenDropdown(null)}
+        >
           {logo ? <img src={logo} alt="" className="brand-logo" /> : null}
           <span className="brand-name">{brandName}</span>
         </NavLink>
@@ -72,6 +82,7 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
               <NavLink
                 key={item.path}
                 to={item.path}
+                onClick={() => setOpenDropdown(null)}
                 className={({ isActive }) =>
                   isActive ? 'nav-link nav-link-active' : 'nav-link'
                 }
@@ -82,7 +93,14 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
           })}
         </nav>
 
-        <button type="button" className="button button-primary" onClick={onPrimaryCta}>
+        <button
+          type="button"
+          className="button button-primary"
+          onClick={() => {
+            setOpenDropdown(null)
+            onPrimaryCta()
+          }}
+        >
           {ctaLabel}
         </button>
       </div>
