@@ -60,6 +60,10 @@ function NewsSection({ title, intro, posts, loading, error, showMoreLink = false
     )
   }
 
+  const featuredPost = posts.find((post) => post.featured) || posts[0]
+  const regularPosts = posts.filter((post) => post.id !== featuredPost.id)
+  const featuredDate = formatPublishedDate(featuredPost.publishedAt)
+
   return (
     <section className="section news-section" aria-label="Noticias">
       <div className="container">
@@ -68,8 +72,33 @@ function NewsSection({ title, intro, posts, loading, error, showMoreLink = false
           <p>{intro}</p>
         </div>
 
+        <Link
+          to={`/noticias/${featuredPost.slug}`}
+          className="news-card news-card-link news-featured-card"
+        >
+          {featuredPost.imageUrl ? (
+            <img
+              src={featuredPost.imageUrl}
+              alt={featuredPost.title}
+              className="news-image news-featured-image"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
+          ) : null}
+
+          <div className="news-card-content news-featured-content">
+            <small>
+              {featuredDate}
+              {featuredPost.author ? ` | ${featuredPost.author}` : ''}
+            </small>
+            <h3>{featuredPost.title}</h3>
+            {featuredPost.excerpt ? <p>{featuredPost.excerpt}</p> : null}
+          </div>
+        </Link>
+
         <div className="news-grid">
-          {posts.map((post) => {
+          {regularPosts.map((post) => {
             const publishedDate = formatPublishedDate(post.publishedAt)
 
             return (

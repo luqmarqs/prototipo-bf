@@ -1,9 +1,10 @@
 import sanityClient from './sanityClient'
 
-const NEWS_LIST_QUERY = `*[_type == "post"] | order(coalesce(publishedAt, _createdAt) desc)[$offset...$end]{
+const NEWS_LIST_QUERY = `*[_type == "post"] | order(coalesce(featured, false) desc, coalesce(publishedAt, _createdAt) desc)[$offset...$end]{
   _id,
   title,
   "slug": slug.current,
+  featured,
   excerpt,
   author,
   publishedAt,
@@ -44,6 +45,7 @@ export async function fetchNewsPage({ offset = 0, limit = 6 } = {}) {
         id: post._id,
         title: post.title,
         slug: post.slug,
+        featured: Boolean(post.featured),
         excerpt: post.excerpt,
         author: post.author,
         imageUrl: post.imageUrl,
