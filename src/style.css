@@ -2391,6 +2391,7 @@ a.event-location:hover {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 272px minmax(0, 1fr);
+  overflow-x: clip;
 }
 
 .admin-sidebar {
@@ -2618,7 +2619,7 @@ a.event-location:hover {
 /* ── Stat cards ────────────────────────────────────────────────────────── */
 .admin-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
   gap: 1rem;
   min-width: 0;
 }
@@ -2672,12 +2673,12 @@ a.event-location:hover {
 /* ── Toolbar ─────────────────────────────────────────────────────────── */
 .admin-toolbar-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(160px, 0.7fr));
+  grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(0, 0.7fr));
   gap: 0.9rem;
 }
 
 .admin-toolbar-grid-wide {
-  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(140px, 0.7fr));
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 0.7fr));
 }
 
 .admin-toolbar-actions {
@@ -3383,7 +3384,6 @@ a.event-location:hover {
 
 /* ── Tablet ≤ 1100px ────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
-  .admin-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ── Mobile drawer breakpoint ≤ 900px ──────────────────────────────── */
@@ -3542,11 +3542,8 @@ a.event-location:hover {
     transform: translateY(-7px) rotate(-45deg);
   }
 
-  /* ── Stats grid: 2 columns ──────────────────────────────────────── */
-  .admin-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-  }
+  /* ── Stats grid: tighter gap on mobile ─────────────────────────── */
+  .admin-stats-grid { gap: 0.75rem; }
 
   .admin-stat-card { padding: 1rem 1.1rem; }
   .admin-stat-card strong { font-size: 1.7rem; }
@@ -3653,7 +3650,7 @@ a.event-location:hover {
 
 /* ── Small phones ≤ 480px ───────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .admin-stats-grid { gap: 0.6rem; }
 
   .admin-toolbar-grid,
   .admin-toolbar-grid-wide {
