@@ -60,8 +60,17 @@ function AppShell() {
   useEffect(() => {
     // Rola para o topo quando muda de página (exceto quando há hash)
     if (!location.hash) {
-      window.scrollTo(0, 0)
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      const frameId = window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      })
+
+      return () => {
+        window.cancelAnimationFrame(frameId)
+      }
     }
+
+    return undefined
   }, [location.pathname, location.hash])
 
   useEffect(() => {
