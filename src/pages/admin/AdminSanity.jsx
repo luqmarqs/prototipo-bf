@@ -14,34 +14,21 @@ function AdminSanity() {
   return (
     <AdminLayout
       title="Sanity Studio"
-      subtitle="Edite e publique conteudo sem sair do painel administrativo."
+      subtitle="O Sanity Studio e o painel de edicao de conteudo do site. Use-o para criar, editar e publicar textos, imagens e outros dados que aparecem nas paginas."
       displayName={auth.displayName}
       avatarUrl={auth.avatarUrl}
       userEmail={auth.email}
       onLogout={handleLogout}
     >
       <section className="admin-card admin-sanity-card">
-        <div className="admin-sanity-head">
-          <p>Studio incorporado no painel.</p>
-          <a
-            href={SANITY_STUDIO_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="button admin-secondary-button"
-          >
-            Abrir em nova aba
-          </a>
-        </div>
-
-        <div className="admin-sanity-embed-wrap">
-          <iframe
-            src={SANITY_STUDIO_URL}
-            title="Sanity Studio"
-            className="admin-sanity-iframe"
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
-        </div>
+        <a
+          href={SANITY_STUDIO_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="button admin-primary-button"
+        >
+          Editar conteudo do site no Sanity Studio
+        </a>
       </section>
     </AdminLayout>
   )
