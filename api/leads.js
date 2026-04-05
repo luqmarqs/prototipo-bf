@@ -73,6 +73,36 @@ function sanitizeLeadPayload(payload) {
   return sanitized
 }
 
+function enrichLeadPayload(payload) {
+  const nowIso = new Date().toISOString()
+  const projectKey = process.env.LEADS_PROJECT_KEY
+    || process.env.VITE_LEADS_PROJECT_KEY
+    || process.env.SUPABASE_PROJECT_KEY
+    || 'site'
+
+  return {
+    ...payload,
+    // Legacy/DB-specific required fields.
+    project_key: payload.project_key || projectKey,
+    form_slug: payload.form_slug || payload.page || payload.source || 'site',
+
+    // Portuguese aliases used by existing schema.
+    nome: payload.nome || payload.name,
+    telefone: payload.telefone || payload.phone,
+    origem: payload.origem || payload.source,
+
+    // Raw payload mirrors for analytics/debug tables that store JSON snapshots.
+    dados: payload.dados || payload,
+    raw_payload: payload.raw_payload || payload,
+
+    // Useful defaults when these columns exist.
+    first_seen_at: payload.first_seen_at || nowIso,
+    last_seen_at: payload.last_seen_at || nowIso,
+    last_submission_at: payload.last_submission_at || nowIso,
+    submission_count: Number.isFinite(payload.submission_count) ? payload.submission_count : 1,
+  }
+}
+
 function toSnakeCasePayload(payload) {
   const aliases = {
     birthDate: 'birth_date',
@@ -97,7 +127,7 @@ function getMissingColumnName(message) {
 }
 
 async function insertLeadWithFallback(supabase, payload) {
-  let insertPayload = toSnakeCasePayload(payload)
+  let insertPayload = toSnakeCasePayload(enrichLeadPayload(payload))
   const triedMissingColumns = new Set()
 
   for (let attempt = 0; attempt < ALLOWED_KEYS.size; attempt += 1) {
