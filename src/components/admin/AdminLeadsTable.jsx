@@ -23,6 +23,9 @@ function AdminLeadsTable({
 
   return (
     <section className="admin-card admin-table-card">
+      <p className="admin-table-scroll-hint" aria-hidden="true">
+        ← deslize para ver mais →
+      </p>
       <div className="admin-table-wrap">
         <table className="admin-table">
           <thead>
@@ -32,7 +35,7 @@ function AdminLeadsTable({
                   type="checkbox"
                   checked={allVisibleSelected}
                   onChange={() => onToggleSelectAll(rows)}
-                  aria-label="Selecionar todos os leads visiveis"
+                  aria-label="Selecionar todos os leads visíveis"
                 />
               </th>
 

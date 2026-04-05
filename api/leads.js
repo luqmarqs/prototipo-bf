@@ -25,11 +25,20 @@ function setCorsHeaders(response) {
 }
 
 function getSupabaseAdminClient() {
-  const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
+  const supabaseUrl = process.env.SUPABASE_URL
+    || process.env.VITE_SUPABASE_URL
+    || process.env.NEXT_PUBLIC_SUPABASE_URL
+
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    || process.env.SUPABASE_SERVICE_ROLE
+    || process.env.SUPABASE_SECRET_KEY
+    || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error('Supabase server config ausente. Defina VITE_SUPABASE_URL/SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY.')
+    const missing = []
+    if (!supabaseUrl) missing.push('SUPABASE_URL')
+    if (!serviceRoleKey) missing.push('SUPABASE_SERVICE_ROLE_KEY')
+    throw new Error(`Supabase server config ausente. Defina: ${missing.join(', ')}`)
   }
 
   return createClient(supabaseUrl, serviceRoleKey, {
@@ -64,6 +73,23 @@ function sanitizeLeadPayload(payload) {
   return sanitized
 }
 
+function normalizeBirthDate(value) {
+  if (!value) return ''
+
+  const raw = String(value).trim()
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    return raw
+  }
+
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
+    const [day, month, year] = raw.split('/')
+    return `${year}-${month}-${day}`
+  }
+
+  return ''
+}
+
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim())
 }
@@ -84,6 +110,16 @@ function validateLead(payload) {
 
   if (!isValidPhone(payload.phone)) {
     return 'Telefone invalido.'
+  }
+
+  if (payload.birthDate) {
+    const normalizedBirthDate = normalizeBirthDate(payload.birthDate)
+
+    if (!normalizedBirthDate) {
+      return 'Data de nascimento invalida.'
+    }
+
+    payload.birthDate = normalizedBirthDate
   }
 
   if (payload.consent !== true) {

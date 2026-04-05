@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import AdminUserMenu from './AdminUserMenu'
 
 const NAV_LINKS = [
@@ -9,11 +10,43 @@ const NAV_LINKS = [
 ]
 
 function AdminLayout({ title, subtitle, displayName, avatarUrl, userEmail, onLogout, children, compact = false }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const location = useLocation()
+
+  // Close sidebar whenever the route changes
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [location.pathname])
+
+  // Prevent body scroll while mobile drawer is open
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [sidebarOpen])
+
   return (
     <div className="admin-shell">
-      <aside className="admin-sidebar">
+      {/* Backdrop — mobile only */}
+      {sidebarOpen && (
+        <div
+          className="admin-sidebar-backdrop"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`admin-sidebar${sidebarOpen ? ' admin-sidebar-open' : ''}`}
+        aria-label="Menu de navegação"
+      >
         <div className="admin-sidebar-top">
-          <div>
+          <div className="admin-sidebar-brand">
             <p className="admin-eyebrow">Painel Admin</p>
             <h1 className="admin-brand">Bancada Feminista</h1>
           </div>
@@ -26,6 +59,7 @@ function AdminLayout({ title, subtitle, displayName, avatarUrl, userEmail, onLog
                   to={to}
                   end={end}
                   className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <span className="admin-nav-icon" aria-hidden="true">{icon}</span>
                   {label}
@@ -36,6 +70,15 @@ function AdminLayout({ title, subtitle, displayName, avatarUrl, userEmail, onLog
         </div>
 
         <div className="admin-sidebar-bottom">
+          {onLogout ? (
+            <button
+              type="button"
+              className="button admin-secondary-button admin-sidebar-logout"
+              onClick={onLogout}
+            >
+              Sair
+            </button>
+          ) : null}
           <div className="admin-sidebar-card">
             <p className="admin-sidebar-label">Versão</p>
             <p className="admin-sidebar-value">Admin v2</p>
@@ -45,12 +88,29 @@ function AdminLayout({ title, subtitle, displayName, avatarUrl, userEmail, onLog
 
       <section className="admin-main">
         <header className="admin-topbar">
-          <div>
-            <p className="admin-eyebrow">Dashboard</p>
-            <h2>{title}</h2>
-            {subtitle ? <p className="admin-topbar-copy">{subtitle}</p> : null}
+          {/* Left: hamburger + title */}
+          <div className="admin-topbar-left">
+            <button
+              type="button"
+              className={`admin-hamburger${sidebarOpen ? ' admin-hamburger-open' : ''}`}
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              aria-label={sidebarOpen ? 'Fechar menu' : 'Abrir menu'}
+              aria-expanded={sidebarOpen}
+              aria-controls="admin-sidebar"
+            >
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+            </button>
+
+            <div className="admin-topbar-title">
+              <p className="admin-eyebrow">Dashboard</p>
+              <h2>{title}</h2>
+              {subtitle ? <p className="admin-topbar-copy">{subtitle}</p> : null}
+            </div>
           </div>
 
+          {/* Right: user menu */}
           <AdminUserMenu
             displayName={displayName}
             avatarUrl={avatarUrl}
@@ -59,7 +119,9 @@ function AdminLayout({ title, subtitle, displayName, avatarUrl, userEmail, onLog
           />
         </header>
 
-        {children}
+        <div className="admin-page-content">
+          {children}
+        </div>
       </section>
     </div>
   )
