@@ -250,6 +250,12 @@ img {
   display: none;
 }
 
+.mobile-cta-float-hidden {
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+}
+
 body.nav-is-open .mobile-cta-float {
   display: none !important;
 }
@@ -2256,6 +2262,7 @@ a.event-location:hover {
     padding: 1rem 1.5rem;
     border-radius: 999px;
     box-shadow: 0 8px 24px rgba(247, 6, 167, 0.4);
+    transition: opacity 180ms ease, transform 180ms ease;
   }
 
   /* ── Hero ── */

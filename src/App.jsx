@@ -20,6 +20,7 @@ const Tema = lazy(() => import('./pages/Tema'))
 
 function AppShell() {
   const [showPrivacy, setShowPrivacy] = useState(false)
+  const [hideMobileCta, setHideMobileCta] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -62,6 +63,33 @@ function AppShell() {
       window.scrollTo(0, 0)
     }
   }, [location.pathname, location.hash])
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.IntersectionObserver) {
+      return undefined
+    }
+
+    const footerElement = document.querySelector('.site-footer')
+    if (!footerElement) {
+      return undefined
+    }
+
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        setHideMobileCta(entry.isIntersecting)
+      },
+      {
+        root: null,
+        threshold: 0.05,
+      },
+    )
+
+    observer.observe(footerElement)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [location.pathname])
 
   function scrollToCapture() {
     if (location.pathname === '/') {
@@ -138,7 +166,10 @@ function AppShell() {
       </div>
 
       {/* Fora do .page para evitar containing block bugs no Android */}
-      <Link to="/#quero-participar" className="mobile-cta-float">
+      <Link
+        to="/#quero-participar"
+        className={hideMobileCta ? 'mobile-cta-float mobile-cta-float-hidden' : 'mobile-cta-float'}
+      >
         Quero apoiar
       </Link>
     </>
