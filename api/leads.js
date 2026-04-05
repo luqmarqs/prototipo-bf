@@ -73,6 +73,60 @@ function sanitizeLeadPayload(payload) {
   return sanitized
 }
 
+function toSnakeCasePayload(payload) {
+  const aliases = {
+    birthDate: 'birth_date',
+    priorityThemes: 'priority_themes',
+  }
+
+  const normalized = { ...payload }
+
+  Object.entries(aliases).forEach(([camelKey, snakeKey]) => {
+    if (normalized[camelKey] !== undefined && normalized[snakeKey] === undefined) {
+      normalized[snakeKey] = normalized[camelKey]
+      delete normalized[camelKey]
+    }
+  })
+
+  return normalized
+}
+
+function getMissingColumnName(message) {
+  const match = String(message || '').match(/Could not find the '([^']+)' column/)
+  return match?.[1] || ''
+}
+
+async function insertLeadWithFallback(supabase, payload) {
+  let insertPayload = toSnakeCasePayload(payload)
+  const triedMissingColumns = new Set()
+
+  for (let attempt = 0; attempt < ALLOWED_KEYS.size; attempt += 1) {
+    const { data, error } = await supabase
+      .from('leads')
+      .insert(insertPayload)
+      .select('id, created_at')
+      .single()
+
+    if (!error) {
+      return { data, error: null }
+    }
+
+    const missingColumn = getMissingColumnName(error.message)
+
+    if (!missingColumn || triedMissingColumns.has(missingColumn)) {
+      return { data: null, error }
+    }
+
+    triedMissingColumns.add(missingColumn)
+    delete insertPayload[missingColumn]
+  }
+
+  return {
+    data: null,
+    error: new Error('Nao foi possivel mapear colunas da tabela leads para o payload enviado.'),
+  }
+}
+
 function normalizeBirthDate(value) {
   if (!value) return ''
 
@@ -152,11 +206,7 @@ export default async function handler(request, response) {
     }
 
     const supabase = getSupabaseAdminClient()
-    const { data, error } = await supabase
-      .from('leads')
-      .insert(payload)
-      .select('id, created_at')
-      .single()
+    const { data, error } = await insertLeadWithFallback(supabase, payload)
 
     if (error) {
       response.status(500).json({ error: error.message || 'Falha ao gravar lead.' })

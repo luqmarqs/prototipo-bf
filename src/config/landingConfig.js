@@ -406,7 +406,6 @@ const landingConfig = {
         },
         fieldMap: {
           nome: 'name',
-          nascimento: 'birthDate',
           whatsapp: 'phone',
           email: 'email',
           uf: 'state',

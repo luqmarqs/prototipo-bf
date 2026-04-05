@@ -34,6 +34,7 @@ img {
 
 .page {
   min-height: 100vh;
+  overflow-x: clip;
   color: var(--color-text-dark, #16111d);
   background-image:
     linear-gradient(180deg, rgba(247, 238, 245, 0.97), rgba(247, 238, 245, 0.95)),
@@ -1115,6 +1116,14 @@ body.nav-is-open .mobile-cta-float {
 
 .portable-content {
   line-height: 1.7;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.portable-content img {
+  max-width: 100%;
+  height: auto;
 }
 
 .portable-content p {
