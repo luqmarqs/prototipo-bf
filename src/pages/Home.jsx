@@ -64,7 +64,7 @@ function Home({ onOpenPrivacy }) {
   useEffect(() => {
     let active = true
 
-    fetchLatestNews(3)
+    fetchLatestNews(4)
       .then((posts) => {
         if (!active) {
           return
