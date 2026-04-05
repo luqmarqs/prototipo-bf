@@ -41,10 +41,12 @@ export function useAdminAuth() {
           .then((admin) => {
             if (!active) return
             setIsAdmin(admin)
+            setError('')
           })
-          .catch(() => {
+          .catch((authError) => {
             if (!active) return
             setIsAdmin(false)
+            setError(authError?.message || 'Falha ao sincronizar usuario admin.')
           })
           .finally(() => {
             if (!active) return
@@ -83,10 +85,12 @@ export function useAdminAuth() {
         .then((admin) => {
           if (!active) return
           setIsAdmin(admin)
+          setError('')
         })
-        .catch(() => {
+        .catch((authError) => {
           if (!active) return
           setIsAdmin(false)
+          setError(authError?.message || 'Falha ao sincronizar usuario admin.')
         })
         .finally(() => {
           if (!active) return

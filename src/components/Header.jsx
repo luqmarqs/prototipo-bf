@@ -40,22 +40,17 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
       document.body.classList.remove('nav-is-open')
     }
 
-    function handlePageShow() {
-      resetMenuState()
-    }
-
-    function handleVisibilityChange() {
-      if (document.visibilityState === 'visible') {
+    function handlePageShow(event) {
+      // Only run when restoring from BFCache to avoid side effects on tab switches.
+      if (event.persisted) {
         resetMenuState()
       }
     }
 
     window.addEventListener('pageshow', handlePageShow)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
       window.removeEventListener('pageshow', handlePageShow)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [])
 

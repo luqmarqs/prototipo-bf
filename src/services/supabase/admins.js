@@ -15,6 +15,7 @@ export async function syncAdminUser(user) {
     .from('admin_users')
     .select('id, user_id, full_name, is_active')
     .ilike('email', normalizedEmail)
+    .limit(1)
     .maybeSingle()
 
   if (fetchError) throw fetchError
@@ -24,7 +25,7 @@ export async function syncAdminUser(user) {
   if (!existing.user_id) updates.user_id = user.id
 
   const googleName = user.user_metadata?.full_name || user.user_metadata?.name || ''
-  if (googleName && !existing.full_name) updates.full_name = googleName
+  if (googleName && !existing.full_name?.trim()) updates.full_name = googleName
 
   if (Object.keys(updates).length > 0) {
     const { data: updated, error: updateError } = await supabase
