@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { checkIsAdmin, syncAdminUser } from '../services/supabase/admins'
 import { getAdminWhitelist, isEmailAuthorized } from '../services/supabase/auth'
 import { getSupabaseClient, hasSupabaseConfig } from '../services/supabase/client'
@@ -10,6 +10,9 @@ export function useAdminAuth() {
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(hasSupabaseConfig())
   const [error, setError] = useState('')
+  // Tracks whether the initial DB sync has completed — prevents re-syncing on every
+  // token refresh or SIGNED_IN event that Supabase fires when the window regains focus.
+  const syncedRef = useRef(false)
 
   useEffect(() => {
     if (!hasSupabaseConfig()) {
@@ -50,6 +53,7 @@ export function useAdminAuth() {
           })
           .finally(() => {
             if (!active) return
+            syncedRef.current = true
             setLoading(false)
           })
       })
@@ -63,23 +67,32 @@ export function useAdminAuth() {
       if (!active) return
 
       const nextUser = nextSession?.user || null
-      setSession(nextSession || null)
-      setUser(nextUser)
-      setError('')
 
+      // Sign-out: clear everything
       if (!nextUser) {
+        syncedRef.current = false
+        setSession(null)
+        setUser(null)
         setIsAdmin(false)
         setFullName('')
+        setError('')
         setLoading(false)
         return
       }
 
-      // Token refresh on focus/visibility change — session is already valid, no need to re-sync
-      if (event === 'TOKEN_REFRESHED') {
+      // After the initial sync, only keep session/user in sync — do not re-run the DB check.
+      // This prevents "Carregando..." from appearing every time Supabase fires TOKEN_REFRESHED
+      // or SIGNED_IN when the window regains focus.
+      if (syncedRef.current) {
+        setSession(nextSession)
+        setUser(nextUser)
         return
       }
 
-      // Keep loading=true while the DB sync+check runs (set inside callback — not direct effect body)
+      // First sign-in (syncedRef still false): run full sync
+      setSession(nextSession)
+      setUser(nextUser)
+      setError('')
       setLoading(true)
 
       syncAdminUser(nextUser)
@@ -99,6 +112,7 @@ export function useAdminAuth() {
         })
         .finally(() => {
           if (!active) return
+          syncedRef.current = true
           setLoading(false)
         })
     })
