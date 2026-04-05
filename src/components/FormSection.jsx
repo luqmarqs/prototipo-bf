@@ -274,14 +274,7 @@ function FormSection({
                         .slice(0, 6)
                         .map((result) => result.item)
 
-                      if (
-                        resultado.length === 1 &&
-                        resultado[0].nomeBusca === termo
-                      ) {
-                        setCidadesFiltradas([])
-                      } else {
-                        setCidadesFiltradas(resultado)
-                      }
+                      setCidadesFiltradas(resultado)
                     }
 
                     if (value.length > 2) {

@@ -1209,16 +1209,18 @@ body.nav-is-open .mobile-cta-float {
   box-shadow: 0 0 0 3px rgba(247, 6, 167, 0.18);
 }
 
-.city-field {
+.city-field,
+.cidade-field {
   position: relative;
 }
 
-.city-suggestion-list {
+.city-suggestion-list,
+.cidade-sugestoes {
   position: absolute;
   top: calc(100% + 0.25rem);
   left: 0;
   right: 0;
-  z-index: 20;
+  z-index: 80;
   display: grid;
   gap: 0.2rem;
   border-radius: 12px;
