@@ -885,7 +885,11 @@ img {
 }
 
 .news-featured-image {
-  height: clamp(240px, 48vw, 420px);
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+  max-height: 420px;
 }
 
 .news-featured-content {
