@@ -2,7 +2,7 @@ import AdminLayout from '../../components/admin/AdminLayout'
 import { useAdminAuth } from '../../hooks/useAdminAuth'
 import { signOutAdmin } from '../../services/supabase/auth'
 
-const SANITY_STUDIO_URL = 'https://4z8utkvy.sanity.studio'
+const SANITY_STUDIO_URL = 'https://site-bf.sanity.studio'
 
 function AdminSanity() {
   const auth = useAdminAuth()
