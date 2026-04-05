@@ -32,6 +32,33 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
     }
   }, [])
 
+  useEffect(() => {
+    function resetMenuState() {
+      setMenuOpen(false)
+      setOpenDropdown(null)
+      document.body.style.overflow = ''
+      document.body.classList.remove('nav-is-open')
+    }
+
+    function handlePageShow() {
+      resetMenuState()
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        resetMenuState()
+      }
+    }
+
+    window.addEventListener('pageshow', handlePageShow)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [])
+
   function closeAll() {
     setMenuOpen(false)
     setOpenDropdown(null)
