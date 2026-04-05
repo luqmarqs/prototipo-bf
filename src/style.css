@@ -2525,6 +2525,7 @@ a.event-location:hover {
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(102, 12, 173, 0.1);
   margin-bottom: 0.25rem;
+  min-width: 0;
 }
 
 .admin-topbar h2 {
@@ -2552,6 +2553,7 @@ a.event-location:hover {
   box-shadow:
     0 1px 3px rgba(22, 17, 29, 0.04),
     0 8px 24px rgba(63, 27, 91, 0.06);
+  min-width: 0;
 }
 
 .admin-login-card,
@@ -3381,6 +3383,11 @@ a.event-location:hover {
 /* page-content is a transparent pass-through on desktop */
 .admin-page-content {
   display: contents;
+}
+
+/* All grid items of admin-main (direct + via display:contents) must not force their column wider */
+.admin-page-content > * {
+  min-width: 0;
 }
 
 /* ── Tablet ≤ 1100px ────────────────────────────────────────────────── */
