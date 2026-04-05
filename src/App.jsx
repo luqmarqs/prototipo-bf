@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import AdminRoute from './components/admin/AdminRoute'
 import ErrorBoundary from './components/ErrorBoundary'
 import Footer from './components/Footer'
 import Header from './components/Header'
@@ -13,6 +14,8 @@ const Campanha = lazy(() => import('./pages/Campanha'))
 const Home = lazy(() => import('./pages/Home'))
 const MandataEstadual = lazy(() => import('./pages/MandataEstadual'))
 const MandataMunicipal = lazy(() => import('./pages/MandataMunicipal'))
+const AdminLeads = lazy(() => import('./pages/admin/AdminLeads'))
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const NoticiaDetalhe = lazy(() => import('./pages/NoticiaDetalhe'))
 const Noticias = lazy(() => import('./pages/Noticias'))
 const QuemSou = lazy(() => import('./pages/QuemSou'))
@@ -23,6 +26,7 @@ function AppShell() {
   const [hideMobileCta, setHideMobileCta] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const isAdminRoute = location.pathname.startsWith('/admin')
 
   const pageStyle = useMemo(
     () => ({
@@ -112,15 +116,17 @@ function AppShell() {
 
   return (
     <>
-      <div className="page" style={pageStyle}>
-        <Header
-          key={location.pathname}
-          navigation={landingConfig.navigation}
-          ctaLabel={landingConfig.home.hero.primaryCta}
-          onPrimaryCta={scrollToCapture}
-          logo={landingConfig.assets.logo}
-          brandName={landingConfig.metadata.brandName}
-        />
+      <div className={isAdminRoute ? 'page page-admin' : 'page'} style={pageStyle}>
+        {!isAdminRoute ? (
+          <Header
+            key={location.pathname}
+            navigation={landingConfig.navigation}
+            ctaLabel={landingConfig.home.hero.primaryCta}
+            onPrimaryCta={scrollToCapture}
+            logo={landingConfig.assets.logo}
+            brandName={landingConfig.metadata.brandName}
+          />
+        ) : null}
 
         <main>
           <Suspense
@@ -133,6 +139,15 @@ function AppShell() {
             )}
           >
             <Routes>
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route
+                path="/admin"
+                element={(
+                  <AdminRoute>
+                    <AdminLeads />
+                  </AdminRoute>
+                )}
+              />
               <Route path="/" element={<Home onOpenPrivacy={() => setShowPrivacy(true)} />} />
               <Route
                 path="/quem-sou"
@@ -158,29 +173,34 @@ function AppShell() {
           </Suspense>
         </main>
 
-        <Footer
-          logo={landingConfig.assets.logo}
-          brandName={landingConfig.metadata.brandName}
-          text={landingConfig.footer.text}
-          instagram={landingConfig.footer.instagram}
-          instagramLabel={landingConfig.footer.instagramLabel}
-          onOpenPrivacy={() => setShowPrivacy(true)}
-        />
+        {!isAdminRoute ? (
+          <Footer
+            logo={landingConfig.assets.logo}
+            brandName={landingConfig.metadata.brandName}
+            text={landingConfig.footer.text}
+            instagram={landingConfig.footer.instagram}
+            instagramLabel={landingConfig.footer.instagramLabel}
+            onOpenPrivacy={() => setShowPrivacy(true)}
+          />
+        ) : null}
 
-        <PrivacySection
-          isOpen={showPrivacy}
-          privacyPolicy={landingConfig.privacyPolicy}
-          onClose={() => setShowPrivacy(false)}
-        />
+        {!isAdminRoute ? (
+          <PrivacySection
+            isOpen={showPrivacy}
+            privacyPolicy={landingConfig.privacyPolicy}
+            onClose={() => setShowPrivacy(false)}
+          />
+        ) : null}
       </div>
 
-      {/* Fora do .page para evitar containing block bugs no Android */}
-      <Link
-        to="/#quero-participar"
-        className={hideMobileCta ? 'mobile-cta-float mobile-cta-float-hidden' : 'mobile-cta-float'}
-      >
-        Quero apoiar
-      </Link>
+      {!isAdminRoute ? (
+        <Link
+          to="/#quero-participar"
+          className={hideMobileCta ? 'mobile-cta-float mobile-cta-float-hidden' : 'mobile-cta-float'}
+        >
+          Quero apoiar
+        </Link>
+      ) : null}
     </>
   )
 }

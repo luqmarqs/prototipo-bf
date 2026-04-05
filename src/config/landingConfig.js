@@ -1,3 +1,5 @@
+const leadsApiEndpoint = import.meta.env.VITE_LEADS_API_ENDPOINT || '/api/leads'
+
 const landingConfig = {
   metadata: {
     brandName: 'Bancada Feminista',
@@ -377,7 +379,7 @@ const landingConfig = {
     interests: ['Abaixo-assinados', 'Agenda de rua', 'Comunicacao digital', 'Formacao politica'],
     api: {
       provider: 'json-api',
-      endpoint: 'https://api.exemplo-campanha.com/v1/leads',
+      endpoint: leadsApiEndpoint,
       googleForms: {
         fieldIds: {
           nome: 'entry.841108454',

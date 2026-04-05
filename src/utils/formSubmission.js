@@ -75,12 +75,25 @@ async function submitToJsonApi(endpoint, jsonApiConfig, formValues) {
   const timeoutId = setTimeout(() => controller.abort(), 10000)
 
   try {
-    await fetch(endpoint, {
+    const response = await fetch(endpoint, {
       method,
       headers,
       body: JSON.stringify(payload),
       signal: controller.signal,
     })
+
+    if (!response.ok) {
+      let errorMessage = 'Nao foi possivel enviar o formulario.'
+
+      try {
+        const data = await response.json()
+        errorMessage = data?.error || errorMessage
+      } catch {
+        // Mantem mensagem padrao quando o backend nao devolve JSON.
+      }
+
+      throw new Error(errorMessage)
+    }
   } finally {
     clearTimeout(timeoutId)
   }
