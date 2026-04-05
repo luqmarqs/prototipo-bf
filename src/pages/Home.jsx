@@ -201,7 +201,6 @@ function Home({ onOpenPrivacy }) {
         title={landingConfig.home.hero.title}
         subtitle={`${landingConfig.home.hero.headline} ${landingConfig.home.hero.subheadline}`}
         image={landingConfig.assets.heroImage}
-        imageMobile={landingConfig.assets.heroImageMobile}
         signaturesCount={supportersCount}
         ctaLabel={landingConfig.home.hero.primaryCta}
         onPrimaryCta={scrollToCapture}
