@@ -9,7 +9,8 @@ import LeadsBarChart from '../../components/admin/LeadsBarChart'
 import { useAdminAuth } from '../../hooks/useAdminAuth'
 import { useCampaignChartData, useCampaignLeads } from '../../hooks/useCampaignLeads'
 import { signOutAdmin } from '../../services/supabase/auth'
-import { fetchCampaignBySlug, fetchCampaignLeadsForExport } from '../../services/supabase/campaigns'
+import { fetchCampaignLeadsForExport } from '../../services/supabase/campaigns'
+import { fetchCampaignBySlug as fetchCampaignFromSanity } from '../../utils/campaigns'
 import { exportLeadsToCsv, exportLeadsToXlsx } from '../../utils/admin/csv'
 import { getLeadRowId } from '../../utils/admin/leads'
 
@@ -74,8 +75,10 @@ function AdminCampaignDetail() {
   useEffect(() => {
     if (!slug || !auth.isAuthorized) return undefined
     let active = true
-    fetchCampaignBySlug(slug)
-      .then((data) => { if (active) setCampaign(data) })
+    fetchCampaignFromSanity(slug)
+      .then((data) => {
+        if (active) setCampaign(data ? { name: data.title, slug: data.slug } : null)
+      })
       .catch((err) => { if (active) setCampaignError(err.message || 'Campanha não encontrada.') })
     return () => { active = false }
   }, [slug, auth.isAuthorized])

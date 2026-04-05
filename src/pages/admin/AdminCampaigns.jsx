@@ -58,10 +58,10 @@ function AdminCampaigns() {
           {campaigns.map((campaign) => (
             <CampaignCard
               key={campaign.id}
-              id={campaign.id}
               name={campaign.name}
               slug={campaign.slug}
               leadCount={campaign.leadCount}
+              imageUrl={campaign.imageUrl}
             />
           ))}
         </section>
