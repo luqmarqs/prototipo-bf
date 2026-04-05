@@ -17,6 +17,7 @@ const MandataMunicipal = lazy(() => import('./pages/MandataMunicipal'))
 const AdminLeads = lazy(() => import('./pages/admin/AdminLeads'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminAdmins = lazy(() => import('./pages/admin/AdminAdmins'))
+const AdminSanity = lazy(() => import('./pages/admin/AdminSanity'))
 const NoticiaDetalhe = lazy(() => import('./pages/NoticiaDetalhe'))
 const Noticias = lazy(() => import('./pages/Noticias'))
 const QuemSou = lazy(() => import('./pages/QuemSou'))
@@ -154,6 +155,14 @@ function AppShell() {
                 element={(
                   <AdminRoute>
                     <AdminAdmins />
+                  </AdminRoute>
+                )}
+              />
+              <Route
+                path="/admin/sanity"
+                element={(
+                  <AdminRoute>
+                    <AdminSanity />
                   </AdminRoute>
                 )}
               />

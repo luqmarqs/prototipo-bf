@@ -28,6 +28,12 @@ function AdminLayout({ title, subtitle, displayName, avatarUrl, userEmail, onLog
             >
               Admins
             </NavLink>
+            <NavLink
+              to="/admin/sanity"
+              className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
+            >
+              Sanity
+            </NavLink>
           </nav>
         ) : null}
       </aside>
