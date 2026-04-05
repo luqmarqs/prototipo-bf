@@ -74,6 +74,12 @@ export function useAdminAuth() {
         return
       }
 
+      // Dont re-sync if page is hidden (prevents reload when returning from another tab)
+      if (document.hidden) {
+        setLoading(false)
+        return
+      }
+
       // Keep loading=true while the DB sync+check runs (set inside callback — not direct effect body)
       setLoading(true)
 

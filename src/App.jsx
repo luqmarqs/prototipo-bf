@@ -121,7 +121,6 @@ function AppShell() {
       <div className={isAdminRoute ? 'page page-admin' : 'page'} style={pageStyle}>
         {!isAdminRoute ? (
           <Header
-            key={location.pathname}
             navigation={landingConfig.navigation}
             ctaLabel={landingConfig.home.hero.primaryCta}
             onPrimaryCta={scrollToCapture}
