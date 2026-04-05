@@ -91,6 +91,10 @@ function enrichLeadPayload(payload) {
     telefone: payload.telefone || payload.phone,
     origem: payload.origem || payload.source,
 
+    // UTM compatibility for schemas that expose utm_* columns in admin.
+    utm_source: payload.utm_source || payload.source || payload.origem || null,
+    utm_campaign: payload.utm_campaign || payload.page || payload.form_slug || null,
+
     // Raw payload mirrors for analytics/debug tables that store JSON snapshots.
     dados: payload.dados || payload,
     raw_payload: payload.raw_payload || payload,

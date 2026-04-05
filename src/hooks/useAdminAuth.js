@@ -59,7 +59,7 @@ export function useAdminAuth() {
         setLoading(false)
       })
 
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
       if (!active) return
 
       const nextUser = nextSession?.user || null
@@ -74,9 +74,8 @@ export function useAdminAuth() {
         return
       }
 
-      // Dont re-sync if page is hidden (prevents reload when returning from another tab)
-      if (document.hidden) {
-        setLoading(false)
+      // Token refresh on focus/visibility change — session is already valid, no need to re-sync
+      if (event === 'TOKEN_REFRESHED') {
         return
       }
 
