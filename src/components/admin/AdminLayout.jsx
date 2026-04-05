@@ -1,41 +1,46 @@
 import { NavLink } from 'react-router-dom'
 import AdminUserMenu from './AdminUserMenu'
 
+const NAV_LINKS = [
+  { to: '/admin', end: true, icon: '◈', label: 'Leads' },
+  { to: '/admin/campanhas', icon: '◉', label: 'Campanhas' },
+  { to: '/admin/admins', icon: '◎', label: 'Admins' },
+  { to: '/admin/sanity', icon: '✦', label: 'Sanity CMS' },
+]
+
 function AdminLayout({ title, subtitle, displayName, avatarUrl, userEmail, onLogout, children, compact = false }) {
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
-        <div>
-          <p className="admin-eyebrow">Painel Admin</p>
-          <h1 className="admin-brand">Bancada Feminista</h1>
-          <p className="admin-sidebar-copy">
-            Leads centralizados com filtros, exportacao e acesso restrito por conta autorizada.
-          </p>
+        <div className="admin-sidebar-top">
+          <div>
+            <p className="admin-eyebrow">Painel Admin</p>
+            <h1 className="admin-brand">Bancada Feminista</h1>
+          </div>
+
+          {!compact ? (
+            <nav className="admin-nav" aria-label="Navegação do painel">
+              {NAV_LINKS.map(({ to, end, icon, label }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={end}
+                  className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
+                >
+                  <span className="admin-nav-icon" aria-hidden="true">{icon}</span>
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+          ) : null}
         </div>
 
-        {!compact ? (
-          <nav className="admin-nav">
-            <NavLink
-              to="/admin"
-              end
-              className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
-            >
-              Leads
-            </NavLink>
-            <NavLink
-              to="/admin/admins"
-              className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
-            >
-              Admins
-            </NavLink>
-            <NavLink
-              to="/admin/sanity"
-              className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
-            >
-              Sanity
-            </NavLink>
-          </nav>
-        ) : null}
+        <div className="admin-sidebar-bottom">
+          <div className="admin-sidebar-card">
+            <p className="admin-sidebar-label">Versão</p>
+            <p className="admin-sidebar-value">Admin v2</p>
+          </div>
+        </div>
       </aside>
 
       <section className="admin-main">

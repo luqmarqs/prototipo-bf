@@ -8,11 +8,13 @@ function AdminLeadsToolbar({
   onClearFilters,
   onExport,
   exportLabel,
-  refreshing,
+  onExportXlsx,
+  exportXlsxLabel,
+  extraFilters,
 }) {
   return (
     <section className="admin-card admin-toolbar-card">
-      <div className="admin-toolbar-grid">
+      <div className={`admin-toolbar-grid${extraFilters ? ' admin-toolbar-grid-wide' : ''}`}>
         <label className="admin-field">
           <span>Buscar</span>
           <input
@@ -32,6 +34,8 @@ function AdminLeadsToolbar({
           <span>Data final</span>
           <input type="date" value={dateTo} onChange={(event) => onDateToChange(event.target.value)} />
         </label>
+
+        {extraFilters}
       </div>
 
       <div className="admin-toolbar-actions">
@@ -40,8 +44,14 @@ function AdminLeadsToolbar({
         </button>
 
         <button type="button" className="button button-primary" onClick={onExport}>
-          {refreshing ? 'Atualizando...' : exportLabel}
+          {exportLabel}
         </button>
+
+        {onExportXlsx ? (
+          <button type="button" className="button admin-secondary-button" onClick={onExportXlsx}>
+            {exportXlsxLabel || 'Exportar Excel'}
+          </button>
+        ) : null}
       </div>
     </section>
   )

@@ -67,7 +67,7 @@ function AdminLeadsTable({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => onToggleSelect(rowId)}
-                      aria-label={`Selecionar lead ${row.email || row.name || rowId}`}
+                      aria-label={`Selecionar lead ${row.email || row.nome || row.name || rowId}`}
                     />
                   </td>
 

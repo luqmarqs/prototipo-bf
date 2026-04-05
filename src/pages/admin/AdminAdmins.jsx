@@ -6,13 +6,14 @@ import { signOutAdmin } from '../../services/supabase/auth'
 
 function AdminAdmins() {
   const auth = useAdminAuth()
-  const enabled = auth.isAdmin || auth.isAuthorized
+  const enabled = auth.isAuthorized
   const { admins, loading, error, refresh, addAdmin, toggleStatus, removeAdmin } = useAdmins({ enabled })
 
   const [newEmail, setNewEmail] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
   const [feedback, setFeedback] = useState('')
   const [feedbackType, setFeedbackType] = useState('')
+  const [confirmRemoveId, setConfirmRemoveId] = useState(null)
 
   function showFeedback(msg, type) {
     setFeedback(msg)
@@ -40,7 +41,7 @@ function AdminAdmins() {
     setActionLoading(true)
     try {
       await toggleStatus(id, !currentStatus)
-      showFeedback(`Status atualizado com sucesso.`, 'success')
+      showFeedback('Status atualizado com sucesso.', 'success')
     } catch (err) {
       showFeedback(err.message || 'Erro ao atualizar status.', 'error')
     } finally {
@@ -48,12 +49,12 @@ function AdminAdmins() {
     }
   }
 
-  async function handleRemove(id, email) {
-    if (!window.confirm(`Remover "${email}" dos admins?`)) return
+  async function handleRemoveConfirm(id) {
+    setConfirmRemoveId(null)
     setActionLoading(true)
     try {
       await removeAdmin(id)
-      showFeedback(`Admin removido.`, 'success')
+      showFeedback('Admin removido com sucesso.', 'success')
     } catch (err) {
       showFeedback(err.message || 'Erro ao remover admin.', 'error')
     } finally {
@@ -94,10 +95,10 @@ function AdminAdmins() {
           </div>
           <button
             type="submit"
-            className="button"
+            className="button button-primary"
             disabled={actionLoading || !newEmail.trim()}
           >
-            {actionLoading ? 'Aguarde...' : 'Adicionar admin'}
+            {actionLoading ? 'Aguarde...' : 'Adicionar'}
           </button>
         </form>
 
@@ -148,7 +149,7 @@ function AdminAdmins() {
               <tbody>
                 {admins.map((admin) => (
                   <tr key={admin.id} className={admin.is_active ? '' : 'admin-row-inactive'}>
-                    <td>{admin.full_name?.trim() || admin.email}</td>
+                    <td>{admin.full_name?.trim() || '—'}</td>
                     <td className="admin-admins-email">{admin.email}</td>
                     <td>
                       <span className={`admin-status-badge ${admin.is_active ? 'admin-status-active' : 'admin-status-inactive'}`}>
@@ -157,38 +158,49 @@ function AdminAdmins() {
                     </td>
                     <td>
                       <span className={`admin-status-badge ${admin.user_id ? 'admin-status-linked' : 'admin-status-unlinked'}`}>
-                        {admin.user_id ? 'Sim' : 'Pendente'}
+                        {admin.user_id ? 'Vinculado' : 'Pendente'}
                       </span>
                     </td>
                     <td>
                       <div className="admin-row-actions">
-                        {admin.is_active ? (
-                          <button
-                            type="button"
-                            className="button admin-secondary-button admin-action-button"
-                            onClick={() => handleToggle(admin.id, admin.is_active)}
-                            disabled={actionLoading}
-                          >
-                            Desativar
-                          </button>
+                        <button
+                          type="button"
+                          className={`button admin-action-button ${admin.is_active ? 'admin-secondary-button' : ''}`}
+                          onClick={() => handleToggle(admin.id, admin.is_active)}
+                          disabled={actionLoading}
+                        >
+                          {admin.is_active ? 'Desativar' : 'Reativar'}
+                        </button>
+
+                        {confirmRemoveId === admin.id ? (
+                          <span className="admin-confirm-inline">
+                            <span className="admin-confirm-label">Confirmar?</span>
+                            <button
+                              type="button"
+                              className="button admin-danger-button admin-action-button"
+                              onClick={() => handleRemoveConfirm(admin.id)}
+                              disabled={actionLoading}
+                            >
+                              Sim
+                            </button>
+                            <button
+                              type="button"
+                              className="button admin-secondary-button admin-action-button"
+                              onClick={() => setConfirmRemoveId(null)}
+                            >
+                              Não
+                            </button>
+                          </span>
                         ) : (
                           <button
                             type="button"
-                            className="button admin-action-button"
-                            onClick={() => handleToggle(admin.id, admin.is_active)}
+                            className="button admin-danger-button admin-action-button"
+                            onClick={() => setConfirmRemoveId(admin.id)}
                             disabled={actionLoading}
                           >
-                            Reativar
+                            Remover
                           </button>
                         )}
-                        <button
-                          type="button"
-                          className="button admin-danger-button admin-action-button"
-                          onClick={() => handleRemove(admin.id, admin.email)}
-                          disabled={actionLoading}
-                        >
-                          Remover
-                        </button>
                       </div>
                     </td>
                   </tr>

@@ -1,3 +1,4 @@
+import * as XLSX from 'xlsx'
 import { buildLeadColumns, formatLeadValue } from './leads'
 
 function escapeCsvCell(value) {
@@ -34,6 +35,23 @@ export function exportLeadsToCsv(rows, filename = 'leads.csv') {
   link.click()
   link.remove()
   URL.revokeObjectURL(url)
+
+  return true
+}
+
+export function exportLeadsToXlsx(rows, filename = 'leads.xlsx') {
+  if (!rows.length) return false
+
+  const columns = buildLeadColumns(rows)
+  const header = columns.map((column) => column.label)
+  const body = rows.map((row) =>
+    columns.map((column) => formatLeadValue(row[column.key], column.key)),
+  )
+
+  const worksheet = XLSX.utils.aoa_to_sheet([header, ...body])
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads')
+  XLSX.writeFile(workbook, filename)
 
   return true
 }

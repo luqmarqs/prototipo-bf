@@ -58,8 +58,11 @@ export function useLeads(filters, { enabled = true, realtime = true } = {}) {
     }
 
     return subscribeToLeadChanges(() => {
-      setRefreshing(true)
-      setReloadToken((value) => value + 1)
+      // Don't reload if page is hidden (prevents reload when returning from another tab)
+      if (!document.hidden) {
+        setRefreshing(true)
+        setReloadToken((value) => value + 1)
+      }
     })
   }, [enabled, realtime])
 

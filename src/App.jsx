@@ -18,6 +18,8 @@ const AdminLeads = lazy(() => import('./pages/admin/AdminLeads'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminAdmins = lazy(() => import('./pages/admin/AdminAdmins'))
 const AdminSanity = lazy(() => import('./pages/admin/AdminSanity'))
+const AdminCampaigns = lazy(() => import('./pages/admin/AdminCampaigns'))
+const AdminCampaignDetail = lazy(() => import('./pages/admin/AdminCampaignDetail'))
 const NoticiaDetalhe = lazy(() => import('./pages/NoticiaDetalhe'))
 const Noticias = lazy(() => import('./pages/Noticias'))
 const QuemSou = lazy(() => import('./pages/QuemSou'))
@@ -162,6 +164,22 @@ function AppShell() {
                 element={(
                   <AdminRoute>
                     <AdminSanity />
+                  </AdminRoute>
+                )}
+              />
+              <Route
+                path="/admin/campanhas"
+                element={(
+                  <AdminRoute>
+                    <AdminCampaigns />
+                  </AdminRoute>
+                )}
+              />
+              <Route
+                path="/admin/campanhas/:slug"
+                element={(
+                  <AdminRoute>
+                    <AdminCampaignDetail />
                   </AdminRoute>
                 )}
               />
