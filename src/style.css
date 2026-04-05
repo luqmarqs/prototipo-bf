@@ -2451,15 +2451,6 @@ a.event-location:hover {
   color: rgba(22, 17, 29, 0.68);
 }
 
-.admin-userbox {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.7rem;
-  color: rgba(22, 17, 29, 0.72);
-}
-
 .admin-card {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(102, 12, 173, 0.12);
@@ -2665,6 +2656,54 @@ a.event-location:hover {
   color: #16111d;
 }
 
+/* ── Admin user menu ───────────────────────────────────── */
+.admin-user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(102, 12, 173, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #5a0a99;
+  border: 2px solid rgba(102, 12, 173, 0.18);
+}
+
+.admin-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-user-info {
+  display: grid;
+  line-height: 1.3;
+  text-align: right;
+}
+
+.admin-user-info strong {
+  font-size: 0.88rem;
+  color: #16111d;
+}
+
+.admin-user-info span {
+  font-size: 0.76rem;
+  color: rgba(22, 17, 29, 0.58);
+}
+
 /* ── Admin nav ──────────────────────────────────────────── */
 .admin-nav {
   display: flex;
@@ -2804,7 +2843,7 @@ a.event-location:hover {
     align-items: stretch;
   }
 
-  .admin-userbox {
+  .admin-user-menu {
     justify-content: flex-start;
   }
 
@@ -2823,7 +2862,7 @@ a.event-location:hover {
   .admin-toolbar-actions .button,
   .admin-pagination-actions .button,
   .admin-login-actions .button,
-  .admin-userbox .button {
+  .admin-user-menu .button {
     width: 100%;
   }
 }

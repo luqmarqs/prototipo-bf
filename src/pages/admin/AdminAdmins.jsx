@@ -73,7 +73,9 @@ function AdminAdmins() {
     <AdminLayout
       title="Gerenciar Admins"
       subtitle="Controle quem tem acesso ao painel administrativo."
-      email={auth.displayName}
+      displayName={auth.displayName}
+      avatarUrl={auth.avatarUrl}
+      userEmail={auth.email}
       onLogout={handleLogout}
     >
       <section className="admin-card admin-admins-card">

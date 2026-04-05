@@ -143,7 +143,9 @@ function AdminLeads() {
     <AdminLayout
       title="Leads captados"
       subtitle="Painel com busca, filtros, exportacao CSV e atualizacao em tempo real via Supabase."
-      email={auth.displayName}
+      displayName={auth.displayName}
+      avatarUrl={auth.avatarUrl}
+      userEmail={auth.email}
       onLogout={handleLogout}
     >
       <section className="admin-stats-grid">

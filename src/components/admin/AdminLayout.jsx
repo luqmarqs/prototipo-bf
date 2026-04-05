@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
+import AdminUserMenu from './AdminUserMenu'
 
-function AdminLayout({ title, subtitle, email, onLogout, children, compact = false }) {
+function AdminLayout({ title, subtitle, displayName, avatarUrl, userEmail, onLogout, children, compact = false }) {
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
@@ -39,14 +40,12 @@ function AdminLayout({ title, subtitle, email, onLogout, children, compact = fal
             {subtitle ? <p className="admin-topbar-copy">{subtitle}</p> : null}
           </div>
 
-          <div className="admin-userbox">
-            {email ? <span>{email}</span> : null}
-            {onLogout ? (
-              <button type="button" className="button admin-secondary-button" onClick={onLogout}>
-                Sair
-              </button>
-            ) : null}
-          </div>
+          <AdminUserMenu
+            displayName={displayName}
+            avatarUrl={avatarUrl}
+            userEmail={userEmail}
+            onLogout={onLogout}
+          />
         </header>
 
         {children}

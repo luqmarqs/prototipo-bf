@@ -67,6 +67,7 @@ export function useAdminAuth() {
 
       if (!nextUser) {
         setIsAdmin(false)
+        setFullName('')
         setLoading(false)
         return
       }
@@ -100,6 +101,7 @@ export function useAdminAuth() {
   }, [])
 
   const email = user?.email?.toLowerCase() || ''
+  const avatarUrl = user?.user_metadata?.avatar_url || ''
   const whitelist = getAdminWhitelist()
 
   return {
@@ -107,6 +109,7 @@ export function useAdminAuth() {
     user,
     email,
     displayName: fullName || email,
+    avatarUrl,
     loading,
     error,
     isAdmin,
