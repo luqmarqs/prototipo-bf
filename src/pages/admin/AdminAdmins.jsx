@@ -138,6 +138,7 @@ function AdminAdmins() {
             <table className="admin-table admin-admins-table">
               <thead>
                 <tr>
+                  <th>Nome</th>
                   <th>Email</th>
                   <th>Status</th>
                   <th>Conta vinculada</th>
@@ -147,6 +148,7 @@ function AdminAdmins() {
               <tbody>
                 {admins.map((admin) => (
                   <tr key={admin.id} className={admin.is_active ? '' : 'admin-row-inactive'}>
+                    <td>{admin.full_name?.trim() || admin.email}</td>
                     <td className="admin-admins-email">{admin.email}</td>
                     <td>
                       <span className={`admin-status-badge ${admin.is_active ? 'admin-status-active' : 'admin-status-inactive'}`}>

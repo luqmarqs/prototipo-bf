@@ -81,7 +81,7 @@ export async function fetchAdmins() {
 
   const { data, error } = await supabase
     .from('admin_users')
-    .select('id, user_id, email, is_active')
+    .select('id, user_id, email, full_name, is_active')
     .order('email', { ascending: true })
 
   if (error) throw error
