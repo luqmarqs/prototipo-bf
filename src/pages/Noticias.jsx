@@ -74,7 +74,7 @@ function Noticias() {
     <>
       <NewsSection
         title="Noticias"
-        intro="Acompanhe todas as publicacoes mais recentes da Bancada Feminista."
+        intro="Arquivo completo de noticias, notas e artigos da Bancada Feminista."
         posts={items}
         loading={loading}
         error={error}

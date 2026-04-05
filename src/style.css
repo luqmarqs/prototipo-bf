@@ -2341,11 +2341,6 @@ a.event-location:hover {
     display: none;
   }
 
-  /* ── Ocultar "Ver mais noticias" na home (evita navegar e perder o form) ── */
-  .news-actions {
-    display: none;
-  }
-
   /* ── News featured card: imagem menor ── */
   .news-featured-image {
     max-height: 220px;
