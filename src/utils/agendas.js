@@ -7,10 +7,10 @@ const AGENDA_LIST_QUERY = `*[_type == "event"] | order(startDate asc){
   startDate,
   endDate,
   status,
-  "locationName": location.name,
-  "locationAddress": location.address,
+  "locationName": coalesce(location.name, locationName),
+  "locationAddress": coalesce(location.address, locationAddress),
   externalLink,
-  "imageUrl": image.asset->url
+  "imageUrl": coalesce(image.asset->url, mainImage.asset->url, mainImageUrl)
 }`
 
 export async function fetchAgendas() {
@@ -22,7 +22,7 @@ export async function fetchAgendas() {
       description: agenda.description,
       startDate: agenda.startDate,
       endDate: agenda.endDate,
-      status: agenda.status,
+      status: agenda.status || 'confirmado',
       location: [agenda.locationName, agenda.locationAddress].filter(Boolean).join(' — '),
       externalLink: agenda.externalLink,
       imageUrl: agenda.imageUrl,

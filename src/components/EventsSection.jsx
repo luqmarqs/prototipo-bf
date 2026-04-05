@@ -208,13 +208,10 @@ function EventCard({ eventItem, onAction }) {
 
 function EventsSection({ title, intro, events = [], loading = false, error = false, onAction }) {
   const now = new Date()
+  const visibleEvents = events.filter((e) => e.status !== 'cancelado')
 
-  const upcoming = events.filter(
-    (e) => e.status !== 'cancelado' && new Date(e.startDate) >= now,
-  )
-  const past = events.filter(
-    (e) => e.status !== 'cancelado' && new Date(e.startDate) < now,
-  )
+  const upcoming = visibleEvents.filter((e) => new Date(e.startDate) >= now)
+  const past = visibleEvents.filter((e) => new Date(e.startDate) < now)
 
   return (
     <section className="section">
@@ -228,7 +225,7 @@ function EventsSection({ title, intro, events = [], loading = false, error = fal
           <p className="events-feedback">Carregando agenda...</p>
         ) : error ? (
           <p className="events-feedback">Erro ao carregar agenda. Tente novamente mais tarde.</p>
-        ) : events.length === 0 ? (
+        ) : visibleEvents.length === 0 ? (
           <p className="events-feedback">Nenhum evento disponível no momento.</p>
         ) : (
           <div className="events-sections">

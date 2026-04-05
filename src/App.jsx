@@ -77,6 +77,7 @@ function AppShell() {
     <>
       <div className="page" style={pageStyle}>
         <Header
+          key={location.pathname}
           navigation={landingConfig.navigation}
           ctaLabel={landingConfig.home.hero.primaryCta}
           onPrimaryCta={scrollToCapture}

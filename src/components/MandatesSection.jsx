@@ -22,9 +22,11 @@ function formatNewsDate(value) {
 function MandatesSection({ pageTitle, pageIntro, mandate }) {
   const [query, setQuery] = useState('')
   const [yearFilter, setYearFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
   const [newsItems, setNewsItems] = useState([])
   const [isLoadingNews, setIsLoadingNews] = useState(true)
   const projects = useMemo(() => mandate?.projects || [], [mandate])
+  const pageSize = 12
 
   useEffect(() => {
     let active = true
@@ -78,6 +80,13 @@ function MandatesSection({ pageTitle, pageIntro, mandate }) {
       return byYear && byText
     })
   }, [projects, query, yearFilter])
+
+  const totalPages = Math.max(1, Math.ceil(filteredProjects.length / pageSize))
+  const safeCurrentPage = Math.min(currentPage, totalPages)
+  const paginatedProjects = useMemo(() => {
+    const start = (safeCurrentPage - 1) * pageSize
+    return filteredProjects.slice(start, start + pageSize)
+  }, [filteredProjects, safeCurrentPage])
 
   if (!mandate) {
     return null
@@ -150,14 +159,20 @@ function MandatesSection({ pageTitle, pageIntro, mandate }) {
               <input
                 type="search"
                 value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                onChange={(event) => {
+                  setQuery(event.target.value)
+                  setCurrentPage(1)
+                }}
                 placeholder="Buscar PL por numero ou tema"
                 aria-label="Buscar projeto de lei"
               />
 
               <select
                 value={yearFilter}
-                onChange={(event) => setYearFilter(event.target.value)}
+                onChange={(event) => {
+                  setYearFilter(event.target.value)
+                  setCurrentPage(1)
+                }}
                 aria-label="Filtrar por ano"
               >
                 <option value="all">Todos os anos</option>
@@ -168,11 +183,14 @@ function MandatesSection({ pageTitle, pageIntro, mandate }) {
                 ))}
               </select>
 
-              <p className="pl-results-count">{filteredProjects.length} PLs encontrados</p>
+              <p className="pl-results-count">
+                {filteredProjects.length} PLs encontrados
+                {filteredProjects.length ? ` · Pagina ${safeCurrentPage} de ${totalPages}` : ''}
+              </p>
             </div>
 
             <div className="mandates-grid">
-              {filteredProjects.map((project) => (
+              {paginatedProjects.map((project) => (
                 <article key={`${mandate.slug}-${project.code}`} className="mandate-card">
                   <div className="mandate-meta-row">
                     <span className="thematic-chip">{project.code}</span>
@@ -181,6 +199,32 @@ function MandatesSection({ pageTitle, pageIntro, mandate }) {
                 </article>
               ))}
             </div>
+
+            {filteredProjects.length > pageSize ? (
+              <div className="pl-pagination" aria-label="Paginacao dos projetos de lei">
+                <button
+                  type="button"
+                  className="button pl-page-btn"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={safeCurrentPage === 1}
+                >
+                  Anterior
+                </button>
+
+                <span className="pl-page-indicator">Pagina {safeCurrentPage} de {totalPages}</span>
+
+                <button
+                  type="button"
+                  className="button pl-page-btn"
+                  onClick={() =>
+                    setCurrentPage((page) => Math.min(totalPages, page + 1))
+                  }
+                  disabled={safeCurrentPage === totalPages}
+                >
+                  Proxima
+                </button>
+              </div>
+            ) : null}
 
             {!filteredProjects.length ? (
               <p className="pl-empty-state">Nenhum PL encontrado com esse filtro.</p>

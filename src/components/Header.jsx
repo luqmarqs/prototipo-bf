@@ -8,11 +8,6 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
   const navRef = useRef(null)
 
   useEffect(() => {
-    setMenuOpen(false)
-    setOpenDropdown(null)
-  }, [location.pathname])
-
-  useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     document.body.classList.toggle('nav-is-open', menuOpen)
     return () => {
