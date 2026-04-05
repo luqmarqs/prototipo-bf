@@ -245,6 +245,11 @@ img {
   flex-shrink: 0;
 }
 
+/* ── Floating mobile CTA (desktop: hidden) ── */
+.mobile-cta-float {
+  display: none;
+}
+
 /* ── Hamburger toggle (desktop: hidden) ── */
 .mobile-menu-toggle {
   display: none;
@@ -323,10 +328,6 @@ img {
   display: none;
 }
 
-/* ── Floating mobile CTA pill (desktop: hidden) ── */
-.mobile-cta-float {
-  display: none;
-}
 
 .nav-dropdown {
   position: relative;
@@ -2110,11 +2111,6 @@ a.event-location:hover {
     padding: 2.6rem 0;
   }
 
-  /* ── Page: espaço para o floating CTA ── */
-  .page {
-    padding-bottom: 5rem;
-  }
-
   /* ── Header: linha única sem quebra ── */
   .header-row {
     align-items: center;
@@ -2205,31 +2201,26 @@ a.event-location:hover {
     border: 1px solid rgba(247, 6, 167, 0.1);
   }
 
-  /* ── Floating CTA pill ── */
+  /* ── Floating CTA ── */
   .mobile-cta-float {
-    display: flex;
+    display: block;
     position: fixed;
     bottom: 1rem;
     left: 1rem;
-    right: 1rem;
+    width: calc(100vw - 2rem);
     z-index: 40;
-    justify-content: center;
     background: linear-gradient(135deg, var(--color-primary, #f706a7), var(--color-primary-strong, #660cad));
-    color: #ffffff !important;
+    color: #ffffff;
     font-family: 'Montserrat', 'Segoe UI', sans-serif;
     font-weight: 800;
     font-size: 0.88rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     text-decoration: none;
-    padding: 0.95rem 1.5rem;
+    text-align: center;
+    padding: 1rem 1.5rem;
     border-radius: 999px;
-    box-shadow: 0 8px 28px rgba(247, 6, 167, 0.45);
-    transition: box-shadow 180ms ease;
-  }
-
-  .mobile-cta-float:active {
-    box-shadow: 0 4px 14px rgba(247, 6, 167, 0.35);
+    box-shadow: 0 8px 24px rgba(247, 6, 167, 0.4);
   }
 
   /* ── Hero ── */

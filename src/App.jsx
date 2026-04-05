@@ -74,70 +74,73 @@ function AppShell() {
   }
 
   return (
-    <div className="page" style={pageStyle}>
-      <Header
-        navigation={landingConfig.navigation}
-        ctaLabel={landingConfig.home.hero.primaryCta}
-        onPrimaryCta={scrollToCapture}
-        logo={landingConfig.assets.logo}
-        brandName={landingConfig.metadata.brandName}
-      />
+    <>
+      <div className="page" style={pageStyle}>
+        <Header
+          navigation={landingConfig.navigation}
+          ctaLabel={landingConfig.home.hero.primaryCta}
+          onPrimaryCta={scrollToCapture}
+          logo={landingConfig.assets.logo}
+          brandName={landingConfig.metadata.brandName}
+        />
 
-      <main>
-        <Suspense
-          fallback={(
-            <section className="section">
-              <div className="container">
-                <p>Carregando pagina...</p>
-              </div>
-            </section>
-          )}
-        >
-          <Routes>
-            <Route path="/" element={<Home onOpenPrivacy={() => setShowPrivacy(true)} />} />
-            <Route
-              path="/quem-sou"
-              element={<QuemSou onOpenPrivacy={() => setShowPrivacy(true)} />}
-            />
-            <Route path="/mandatas" element={<Navigate to="/mandatas/municipal" replace />} />
-            <Route path="/mandatas/municipal" element={<MandataMunicipal />} />
-            <Route path="/mandatas/estadual" element={<MandataEstadual />} />
-            <Route path="/campanhas" element={<Campanhas />} />
-            <Route path="/eventos" element={<Navigate to="/agenda" replace />} />
-            <Route
-              path="/agenda"
-              element={<Eventos onOpenPrivacy={() => setShowPrivacy(true)} />}
-            />
-            <Route
-              path="/campanha/:slug"
-              element={<Campanha onOpenPrivacy={() => setShowPrivacy(true)} />}
-            />
-            <Route path="/temas/:slug" element={<Tema />} />
-            <Route path="/noticias" element={<Noticias />} />
-            <Route path="/noticias/:slug" element={<NoticiaDetalhe />} />
-          </Routes>
-        </Suspense>
-      </main>
+        <main>
+          <Suspense
+            fallback={(
+              <section className="section">
+                <div className="container">
+                  <p>Carregando pagina...</p>
+                </div>
+              </section>
+            )}
+          >
+            <Routes>
+              <Route path="/" element={<Home onOpenPrivacy={() => setShowPrivacy(true)} />} />
+              <Route
+                path="/quem-sou"
+                element={<QuemSou onOpenPrivacy={() => setShowPrivacy(true)} />}
+              />
+              <Route path="/mandatas" element={<Navigate to="/mandatas/municipal" replace />} />
+              <Route path="/mandatas/municipal" element={<MandataMunicipal />} />
+              <Route path="/mandatas/estadual" element={<MandataEstadual />} />
+              <Route path="/campanhas" element={<Campanhas />} />
+              <Route path="/eventos" element={<Navigate to="/agenda" replace />} />
+              <Route
+                path="/agenda"
+                element={<Eventos onOpenPrivacy={() => setShowPrivacy(true)} />}
+              />
+              <Route
+                path="/campanha/:slug"
+                element={<Campanha onOpenPrivacy={() => setShowPrivacy(true)} />}
+              />
+              <Route path="/temas/:slug" element={<Tema />} />
+              <Route path="/noticias" element={<Noticias />} />
+              <Route path="/noticias/:slug" element={<NoticiaDetalhe />} />
+            </Routes>
+          </Suspense>
+        </main>
 
-      <Footer
-        logo={landingConfig.assets.logo}
-        brandName={landingConfig.metadata.brandName}
-        text={landingConfig.footer.text}
-        instagram={landingConfig.footer.instagram}
-        instagramLabel={landingConfig.footer.instagramLabel}
-        onOpenPrivacy={() => setShowPrivacy(true)}
-      />
+        <Footer
+          logo={landingConfig.assets.logo}
+          brandName={landingConfig.metadata.brandName}
+          text={landingConfig.footer.text}
+          instagram={landingConfig.footer.instagram}
+          instagramLabel={landingConfig.footer.instagramLabel}
+          onOpenPrivacy={() => setShowPrivacy(true)}
+        />
 
-      <PrivacySection
-        isOpen={showPrivacy}
-        privacyPolicy={landingConfig.privacyPolicy}
-        onClose={() => setShowPrivacy(false)}
-      />
+        <PrivacySection
+          isOpen={showPrivacy}
+          privacyPolicy={landingConfig.privacyPolicy}
+          onClose={() => setShowPrivacy(false)}
+        />
+      </div>
 
-      <Link to="/#quero-participar" className="mobile-cta-float" aria-label="Quero apoiar a campanha">
+      {/* Fora do .page para evitar containing block bugs no Android */}
+      <Link to="/#quero-participar" className="mobile-cta-float">
         Quero apoiar
       </Link>
-    </div>
+    </>
   )
 }
 
