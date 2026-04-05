@@ -9,57 +9,12 @@ import { fetchLatestNews } from '../utils/news'
 import { setBasicSeo } from '../utils/seo'
 import { shareOnWhatsApp } from '../utils/share'
 
-const initialSupportersCount = landingConfig.socialProof.liveCounter.initialValue
-
 function Home({ onOpenPrivacy }) {
-  const [supportersCount, setSupportersCount] = useState(initialSupportersCount)
-  const [target, setTarget] = useState(null)
   const [newsPosts, setNewsPosts] = useState([])
   const [isLoadingNews, setIsLoadingNews] = useState(true)
   const [newsError, setNewsError] = useState(false)
   const [campaigns, setCampaigns] = useState(landingConfig.thematicLandings)
   const [campaignsError, setCampaignsError] = useState(false)
-
-  useEffect(() => {
-    if (target === null) {
-      return
-    }
-
-    let frame
-
-    function animate() {
-      let shouldContinue = true
-
-      setSupportersCount((current) => {
-        if (current >= target) {
-          shouldContinue = false
-          return target
-        }
-
-        const next = current + Math.ceil((target - current) / 20)
-        if (next >= target) {
-          shouldContinue = false
-          return target
-        }
-
-        return next
-      })
-
-      if (shouldContinue) {
-        frame = requestAnimationFrame(animate)
-      }
-    }
-
-    frame = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(frame)
-  }, [target])
-
-  useEffect(() => {
-    fetch(landingConfig.socialProof.liveCounter.sourceUrl)
-      .then((response) => response.json())
-      .then((data) => setTarget(Number(data.assinaturas) || initialSupportersCount))
-      .catch(() => setTarget(initialSupportersCount + 500))
-  }, [])
 
   useEffect(() => {
     let active = true
@@ -201,7 +156,6 @@ function Home({ onOpenPrivacy }) {
         title={landingConfig.home.hero.title}
         subtitle={`${landingConfig.home.hero.headline} ${landingConfig.home.hero.subheadline}`}
         image={landingConfig.assets.heroImage}
-        signaturesCount={supportersCount}
         ctaLabel={landingConfig.home.hero.primaryCta}
         onPrimaryCta={scrollToCapture}
         onShare={handleShare}

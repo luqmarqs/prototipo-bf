@@ -2205,36 +2205,43 @@ a.event-location:hover {
     border: 1px solid rgba(247, 6, 167, 0.1);
   }
 
-  /* ── Floating CTA pill (full-width, centered) ── */
+  /* ── Floating CTA pill ── */
   .mobile-cta-float {
-    display: flex;
+    display: inline-flex;
     position: fixed;
     bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 40;
     background: linear-gradient(135deg, var(--color-primary, #f706a7), var(--color-primary-strong, #660cad));
     color: #ffffff !important;
     font-family: 'Montserrat', 'Segoe UI', sans-serif;
     font-weight: 800;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     text-decoration: none;
-    padding: 1rem 1.5rem;
+    padding: 0.95rem 2.2rem;
     border-radius: 999px;
     box-shadow: 0 8px 28px rgba(247, 6, 167, 0.45);
-    align-items: center;
-    justify-content: center;
-    transition: transform 180ms ease, box-shadow 180ms ease;
+    white-space: nowrap;
+    max-width: calc(100vw - 2rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: box-shadow 180ms ease;
   }
 
   .mobile-cta-float:active {
-    transform: scale(0.97);
-    box-shadow: 0 4px 14px rgba(247, 6, 167, 0.4);
+    box-shadow: 0 4px 14px rgba(247, 6, 167, 0.35);
   }
 
   /* ── Hero ── */
+  .page-hero-image {
+    height: 42vh;
+    min-height: 200px;
+    object-position: center center;
+  }
+
   .page-hero-copy {
     padding: 0;
   }
@@ -2299,10 +2306,26 @@ a.event-location:hover {
     border-radius: 18px;
   }
 
+  /* ── News: limitar a 2 itens na home (1 destaque + 1 grid) ── */
+  .news-grid .news-card-link:nth-child(n+2) {
+    display: none;
+  }
+
+  /* ── Ocultar "Ver mais noticias" na home (evita navegar e perder o form) ── */
+  .news-actions {
+    display: none;
+  }
+
   /* ── News featured card: imagem menor ── */
   .news-featured-image {
     max-height: 220px;
     object-fit: cover;
+  }
+
+  /* ── Dropdown toggle: largura total no drawer ── */
+  .nav-dropdown-toggle {
+    width: 100%;
+    text-align: left;
   }
 
   /* ── Section head ── */

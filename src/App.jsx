@@ -135,7 +135,7 @@ function AppShell() {
       />
 
       <Link to="/#quero-participar" className="mobile-cta-float" aria-label="Quero apoiar a campanha">
-        {landingConfig.home.hero.primaryCta}
+        Quero apoiar
       </Link>
     </div>
   )
