@@ -250,6 +250,10 @@ img {
   display: none;
 }
 
+body.nav-is-open .mobile-cta-float {
+  display: none !important;
+}
+
 /* ── Hamburger toggle (desktop: hidden) ── */
 .mobile-menu-toggle {
   display: none;

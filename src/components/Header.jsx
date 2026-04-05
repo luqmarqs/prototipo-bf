@@ -14,8 +14,10 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
+    document.body.classList.toggle('nav-is-open', menuOpen)
     return () => {
       document.body.style.overflow = ''
+      document.body.classList.remove('nav-is-open')
     }
   }, [menuOpen])
 
