@@ -2620,6 +2620,7 @@ a.event-location:hover {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
+  min-width: 0;
 }
 
 .admin-stat-card {
@@ -2632,6 +2633,8 @@ a.event-location:hover {
   border: 1px solid rgba(102, 12, 173, 0.1);
   box-shadow: 0 1px 3px rgba(22, 17, 29, 0.04);
   transition: box-shadow 0.2s;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .admin-stat-card:hover {
