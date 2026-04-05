@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
-import { isEmailAuthorized, getAdminWhitelist } from '../services/supabase/auth'
+import { checkIsAdmin, syncAdminUser } from '../services/supabase/admins'
+import { getAdminWhitelist, isEmailAuthorized } from '../services/supabase/auth'
 import { getSupabaseClient, hasSupabaseConfig } from '../services/supabase/client'
 
 export function useAdminAuth() {
   const [session, setSession] = useState(null)
   const [user, setUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(hasSupabaseConfig())
   const [error, setError] = useState('')
 
@@ -18,36 +21,76 @@ export function useAdminAuth() {
 
     supabase.auth.getSession()
       .then(({ data, error: sessionError }) => {
-        if (!active) {
-          return
-        }
+        if (!active) return
+        if (sessionError) setError(sessionError.message)
 
-        if (sessionError) {
-          setError(sessionError.message)
-        }
-
+        const sessionUser = data.session?.user || null
         setSession(data.session || null)
-        setUser(data.session?.user || null)
-        setLoading(false)
+        setUser(sessionUser)
+
+        if (!sessionUser) {
+          setLoading(false)
+          return undefined
+        }
+
+        return syncAdminUser(sessionUser)
+          .then((record) => {
+            if (active && record?.full_name) setFullName(record.full_name)
+            return checkIsAdmin(sessionUser.id, sessionUser.email)
+          })
+          .then((admin) => {
+            if (!active) return
+            setIsAdmin(admin)
+          })
+          .catch(() => {
+            if (!active) return
+            setIsAdmin(false)
+          })
+          .finally(() => {
+            if (!active) return
+            setLoading(false)
+          })
       })
       .catch((sessionError) => {
-        if (!active) {
-          return
-        }
-
+        if (!active) return
         setError(sessionError.message || 'Nao foi possivel carregar a sessao.')
         setLoading(false)
       })
 
     const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (!active) {
+      if (!active) return
+
+      const nextUser = nextSession?.user || null
+      setSession(nextSession || null)
+      setUser(nextUser)
+      setError('')
+
+      if (!nextUser) {
+        setIsAdmin(false)
+        setLoading(false)
         return
       }
 
-      setSession(nextSession || null)
-      setUser(nextSession?.user || null)
-      setLoading(false)
-      setError('')
+      // Keep loading=true while the DB sync+check runs (set inside callback — not direct effect body)
+      setLoading(true)
+
+      syncAdminUser(nextUser)
+        .then((record) => {
+          if (active && record?.full_name) setFullName(record.full_name)
+          return checkIsAdmin(nextUser.id, nextUser.email)
+        })
+        .then((admin) => {
+          if (!active) return
+          setIsAdmin(admin)
+        })
+        .catch(() => {
+          if (!active) return
+          setIsAdmin(false)
+        })
+        .finally(() => {
+          if (!active) return
+          setLoading(false)
+        })
     })
 
     return () => {
@@ -63,8 +106,10 @@ export function useAdminAuth() {
     session,
     user,
     email,
+    displayName: fullName || email,
     loading,
     error,
+    isAdmin,
     hasConfig: hasSupabaseConfig(),
     hasWhitelist: whitelist.length > 0,
     whitelist,

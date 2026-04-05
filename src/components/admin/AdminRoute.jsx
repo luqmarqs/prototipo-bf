@@ -37,7 +37,8 @@ function AdminRoute({ children }) {
     return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />
   }
 
-  if (!auth.isAuthorized) {
+  // isAdmin = DB-based check (primary); isAuthorized = env whitelist (fallback for bootstrap)
+  if (!auth.isAdmin && !auth.isAuthorized) {
     return <Navigate to="/admin/login" replace state={{ from: location.pathname, denied: true }} />
   }
 

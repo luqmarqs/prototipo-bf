@@ -1,3 +1,5 @@
+import { NavLink } from 'react-router-dom'
+
 function AdminLayout({ title, subtitle, email, onLogout, children, compact = false }) {
   return (
     <div className="admin-shell">
@@ -11,11 +13,21 @@ function AdminLayout({ title, subtitle, email, onLogout, children, compact = fal
         </div>
 
         {!compact ? (
-          <div className="admin-sidebar-card">
-            <p className="admin-sidebar-label">Modulo ativo</p>
-            <strong>Leads</strong>
-            <span>Tabela dinamica conectada ao Supabase.</span>
-          </div>
+          <nav className="admin-nav">
+            <NavLink
+              to="/admin"
+              end
+              className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
+            >
+              Leads
+            </NavLink>
+            <NavLink
+              to="/admin/admins"
+              className={({ isActive }) => `admin-nav-link${isActive ? ' admin-nav-link-active' : ''}`}
+            >
+              Admins
+            </NavLink>
+          </nav>
         ) : null}
       </aside>
 

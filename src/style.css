@@ -2665,6 +2665,119 @@ a.event-location:hover {
   color: #16111d;
 }
 
+/* ── Admin nav ──────────────────────────────────────────── */
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-nav-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s;
+}
+
+.admin-nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.admin-nav-link-active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+/* ── Admin admins section ───────────────────────────────── */
+.admin-section-title {
+  margin: 0 0 1.1rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.admin-admins-card {
+  padding: 1.5rem;
+}
+
+.admin-admins-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  align-items: end;
+}
+
+.admin-admins-email {
+  font-family: monospace;
+  font-size: 0.92rem;
+}
+
+.admin-admins-table {
+  min-width: 560px;
+}
+
+.admin-row-inactive td {
+  opacity: 0.6;
+}
+
+.admin-row-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-action-button {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.84rem;
+}
+
+.admin-danger-button {
+  color: #8a1f1f;
+  background: rgba(198, 40, 40, 0.07);
+  border-color: rgba(198, 40, 40, 0.2);
+}
+
+.admin-danger-button:hover {
+  background: rgba(198, 40, 40, 0.14);
+}
+
+.admin-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.admin-status-active {
+  background: rgba(40, 167, 69, 0.12);
+  color: #176b2f;
+}
+
+.admin-status-inactive {
+  background: rgba(198, 40, 40, 0.1);
+  color: #8a1f1f;
+}
+
+.admin-status-linked {
+  background: rgba(102, 12, 173, 0.1);
+  color: #5a0a99;
+}
+
+.admin-status-unlinked {
+  background: rgba(102, 12, 173, 0.04);
+  color: rgba(22, 17, 29, 0.52);
+}
+
+.admin-empty-message {
+  margin: 1.5rem 0 0.5rem;
+  color: rgba(22, 17, 29, 0.52);
+}
+
 @media (max-width: 1100px) {
   .admin-shell {
     grid-template-columns: 1fr;
@@ -2696,7 +2809,8 @@ a.event-location:hover {
   }
 
   .admin-stats-grid,
-  .admin-toolbar-grid {
+  .admin-toolbar-grid,
+  .admin-admins-form {
     grid-template-columns: 1fr;
   }
 
