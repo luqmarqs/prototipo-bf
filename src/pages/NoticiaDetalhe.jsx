@@ -68,6 +68,8 @@ function NoticiaDetalhe() {
     setBasicSeo({
       title: `${post.title} | ${landingConfig.metadata.brandName}`,
       description: post.excerpt || post.title,
+      imageUrl: post.imageUrl,
+      type: 'article',
     })
   }, [post])
 

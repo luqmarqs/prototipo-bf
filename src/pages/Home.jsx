@@ -96,6 +96,7 @@ function Home({ onOpenPrivacy }) {
     setBasicSeo({
       title: `${landingConfig.metadata.brandName} | Home`,
       description: landingConfig.home.hero.subheadline,
+      imageUrl: landingConfig.assets.heroImage,
     })
   }, [])
 

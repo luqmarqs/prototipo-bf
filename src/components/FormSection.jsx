@@ -3,6 +3,14 @@ import Fuse from 'fuse.js'
 import PrivacyConsent from './PrivacyConsent'
 import { submitFormData } from '../utils/formSubmission'
 import { getBrazilCities, getBrazilStates } from '../utils/locationData'
+import {
+  formatBirthDate,
+  formatPhone,
+  isValidBirthDate,
+  isValidEmail,
+  isValidPhone,
+  normalizeText,
+} from '../utils/formValidation'
 
 function FormSection({
   formIntegration,
@@ -26,13 +34,14 @@ function FormSection({
   const [nascimentoErro, setNascimentoErro] = useState('')
   const [emailErro, setEmailErro] = useState('')
   const [cidadeErro, setCidadeErro] = useState('')
+  const [lgpdErro, setLgpdErro] = useState('')
   const [cidadeBusca, setCidadeBusca] = useState('')
   const [cidadesFiltradas, setCidadesFiltradas] = useState([])
   const [ufs, setUfs] = useState([])
   const [cidadesFonte, setCidadesFonte] = useState([])
-
-  const normalizar = (texto) =>
-    texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [success, setSuccess] = useState(false)
 
   useEffect(() => {
     getBrazilStates()
@@ -49,11 +58,9 @@ function FormSection({
   const cidades = useMemo(() => {
     if (!form.uf) return []
 
-    const cidadesFiltradasUF = cidadesFonte.filter((cidade) => cidade.uf === form.uf)
-    return cidadesFiltradasUF.map((cidade) => ({
-      ...cidade,
-      nomeBusca: normalizar(cidade.nome),
-    }))
+    return cidadesFonte
+      .filter((cidade) => cidade.uf === form.uf)
+      .map((cidade) => ({ ...cidade, nomeBusca: normalizeText(cidade.nome) }))
   }, [cidadesFonte, form.uf])
 
   const fuse = useMemo(() => {
@@ -66,127 +73,67 @@ function FormSection({
     })
   }, [cidades])
 
-  const formatPhone = (value) => {
-    const digits = value.replace(/\D/g, '').slice(0, 11)
-
-    if (digits.length <= 2) return digits
-    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
-    if (digits.length <= 10) {
-      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`
-    }
-
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
-  }
-
-  const formatBirthDate = (value) => {
-    const digits = value.replace(/\D/g, '').slice(0, 8)
-
-    if (digits.length <= 2) return digits
-    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`
-    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`
-  }
-
-  const validarNascimento = (value) => {
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(value)) return false
-
-    const [diaStr, mesStr, anoStr] = value.split('/')
-    const dia = Number(diaStr)
-    const mes = Number(mesStr)
-    const ano = Number(anoStr)
-
-    if (ano < 1900 || mes < 1 || mes > 12 || dia < 1 || dia > 31) return false
-
-    const data = new Date(ano, mes - 1, dia)
-    const hoje = new Date()
-
-    return (
-      data.getFullYear() === ano &&
-      data.getMonth() === mes - 1 &&
-      data.getDate() === dia &&
-      data <= hoje
-    )
-  }
-
-  const validarTelefoneBR = (telefone) => {
-    const numero = telefone.replace(/\D/g, '')
-
-    if (numero.length !== 10 && numero.length !== 11) return false
-    if (/^(\d)\1+$/.test(numero)) return false
-
-    const ddd = parseInt(numero.substring(0, 2), 10)
-
-    if (ddd < 11 || ddd > 99) return false
-    if (numero.length === 11 && numero[2] !== '9') return false
-
-    if (numero.length === 10) {
-      const primeiro = parseInt(numero[2], 10)
-
-      if (primeiro < 2 || primeiro > 5) return false
-    }
-
-    return true
-  }
-
-  const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-
   const validarCidade = (cidade) => {
     if (!cidade) return false
-
-    const termo = normalizar(cidade)
-    return cidades.some((item) => normalizar(item.nome) === termo)
+    const termo = normalizeText(cidade)
+    return cidades.some((item) => item.nomeBusca === termo)
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    setSubmitError('')
+    setSuccess(false)
 
-    if (!validarTelefoneBR(form.whatsapp)) {
-      window.alert('Telefone invalido')
+    if (!isValidPhone(form.whatsapp)) {
+      setTelefoneErro('Telefone invalido')
       return
     }
 
-    if (!validarNascimento(form.nascimento)) {
-      window.alert('Informe uma data de nascimento valida no formato dd/mm/aaaa.')
+    if (!isValidBirthDate(form.nascimento)) {
+      setNascimentoErro('Data de nascimento invalida')
       return
     }
 
     if (!validarCidade(form.cidade)) {
-      window.alert('Selecione uma cidade valida.')
+      setCidadeErro('Selecione uma cidade valida')
       return
     }
 
     if (!form.lgpd) {
-      window.alert('Voce precisa aceitar a politica de privacidade.')
+      setLgpdErro('Voce precisa aceitar a politica de privacidade')
       return
     }
 
-    await submitFormData(formIntegration, {
-      ...form,
-      origem: source,
-      pagina: page,
-    })
+    setIsSubmitting(true)
 
-    setForm({
-      nome: '',
-      nascimento: '',
-      whatsapp: '',
-      email: '',
-      uf: '',
-      cidade: '',
-      lgpd: false,
-    })
-    setCidadeBusca('')
-    setCidadesFiltradas([])
-    setNascimentoErro('')
-    setTelefoneErro('')
-    setEmailErro('')
-    setCidadeErro('')
+    try {
+      await submitFormData(formIntegration, {
+        ...form,
+        origem: source,
+        pagina: page,
+      })
 
-    if (
-      window.confirm(
-        'Apoio registrado com sucesso!\n\nDeseja compartilhar esta campanha no WhatsApp?',
-      )
-    ) {
-      onShare()
+      setForm({
+        nome: '',
+        nascimento: '',
+        whatsapp: '',
+        email: '',
+        uf: '',
+        cidade: '',
+        lgpd: false,
+      })
+      setCidadeBusca('')
+      setCidadesFiltradas([])
+      setNascimentoErro('')
+      setTelefoneErro('')
+      setEmailErro('')
+      setCidadeErro('')
+      setLgpdErro('')
+      setSuccess(true)
+    } catch {
+      setSubmitError('Nao foi possivel enviar agora. Tente novamente em instantes.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -223,7 +170,7 @@ function FormSection({
                   const masked = formatBirthDate(event.target.value)
                   setForm({ ...form, nascimento: masked })
 
-                  if (masked.length === 10 && !validarNascimento(masked)) {
+                  if (masked.length === 10 && !isValidBirthDate(masked)) {
                     setNascimentoErro('Data invalida')
                   } else {
                     setNascimentoErro('')
@@ -247,22 +194,14 @@ function FormSection({
 
                   if (numero.length > 0 && numero.length < 10) {
                     setTelefoneErro('Telefone incompleto')
-                    return
-                  }
-
-                  if (numero.length === 10 || numero.length === 11) {
-                    if (!validarTelefoneBR(masked)) {
-                      setTelefoneErro('Telefone invalido')
-                    } else {
-                      setTelefoneErro('')
-                    }
+                  } else if ((numero.length === 10 || numero.length === 11) && !isValidPhone(masked)) {
+                    setTelefoneErro('Telefone invalido')
                   } else {
                     setTelefoneErro('')
                   }
                 }}
                 required
               />
-
               {telefoneErro && <p className="field-error">{telefoneErro}</p>}
 
               <input
@@ -277,7 +216,7 @@ function FormSection({
                   setForm({ ...form, email: value })
 
                   if (value.length > 3) {
-                    if (!validarEmail(value)) {
+                    if (!isValidEmail(value)) {
                       setEmailErro('E-mail invalido')
                     } else {
                       setEmailErro('')
@@ -288,7 +227,6 @@ function FormSection({
                 }}
                 required
               />
-
               {emailErro && <p className="field-error">{emailErro}</p>}
 
               <select
@@ -330,7 +268,7 @@ function FormSection({
                     if (!fuse || value.length < 2) {
                       setCidadesFiltradas([])
                     } else {
-                      const termo = normalizar(value)
+                      const termo = normalizeText(value)
                       const resultado = fuse
                         .search(termo)
                         .slice(0, 6)
@@ -338,7 +276,7 @@ function FormSection({
 
                       if (
                         resultado.length === 1 &&
-                        normalizar(resultado[0].nome) === termo
+                        resultado[0].nomeBusca === termo
                       ) {
                         setCidadesFiltradas([])
                       } else {
@@ -348,7 +286,7 @@ function FormSection({
 
                     if (value.length > 2) {
                       const existe = cidades.some(
-                        (cidade) => normalizar(cidade.nome) === normalizar(value),
+                        (cidade) => cidade.nomeBusca === normalizeText(value),
                       )
 
                       if (!existe) {
@@ -396,12 +334,16 @@ function FormSection({
 
               <PrivacyConsent
                 checked={form.lgpd}
-                onChange={(checked) => setForm({ ...form, lgpd: checked })}
+                onChange={(checked) => {
+                  setForm({ ...form, lgpd: checked })
+                  if (checked) setLgpdErro('')
+                }}
                 onOpenPrivacy={onOpenPrivacy}
               />
+              {lgpdErro && <p className="field-error">{lgpdErro}</p>}
 
-              <button type="submit" className="glow form-submit">
-                Confirmar apoio
+              <button type="submit" className="glow form-submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Enviando...' : 'Confirmar apoio'}
               </button>
 
               <button
@@ -411,6 +353,17 @@ function FormSection({
               >
                 Compartilhar no WhatsApp
               </button>
+
+              {submitError && <p className="field-error">{submitError}</p>}
+
+              {success && (
+                <div className="form-success">
+                  <p>Apoio registrado com sucesso! Obrigada!</p>
+                  <button type="button" className="whatsapp-share glow" onClick={onShare}>
+                    Compartilhar no WhatsApp
+                  </button>
+                </div>
+              )}
             </form>
           </div>
         </div>

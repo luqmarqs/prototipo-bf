@@ -63,6 +63,7 @@ function Campanha({ onOpenPrivacy }) {
     setBasicSeo({
       title: `${campaign.title} | ${landingConfig.metadata.brandName}`,
       description: campaign.hero?.text || campaign.contentSection?.title || campaign.title,
+      imageUrl: campaign.hero?.imageUrl || campaign.contentSection?.imageUrl,
     })
   }, [campaign])
 

@@ -4,81 +4,14 @@ import PrivacyConsent from './PrivacyConsent'
 import { submitFormData } from '../utils/formSubmission'
 import { trackLead } from '../utils/analytics'
 import { getBrazilCities, getBrazilStates } from '../utils/locationData'
-
-function normalizeText(value) {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-}
-
-function formatPhone(value) {
-  const digits = value.replace(/\D/g, '').slice(0, 11)
-
-  if (digits.length <= 2) return digits
-  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
-  if (digits.length <= 10) {
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`
-  }
-
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
-}
-
-function isValidPhoneBR(phone) {
-  const number = phone.replace(/\D/g, '')
-
-  if (number.length !== 10 && number.length !== 11) return false
-  if (/^(\d)\1+$/.test(number)) return false
-
-  const ddd = Number(number.substring(0, 2))
-  if (ddd < 11 || ddd > 99) return false
-
-  if (number.length === 11 && number[2] !== '9') return false
-
-  if (number.length === 10) {
-    const firstDigit = Number(number[2])
-    if (firstDigit < 2 || firstDigit > 5) return false
-  }
-
-  return true
-}
-
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
-
-function formatBirthDate(value) {
-  const digits = value.replace(/\D/g, '').slice(0, 8)
-
-  if (digits.length <= 2) return digits
-  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`
-  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`
-}
-
-function isValidBirthDate(value) {
-  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-    return false
-  }
-
-  const [dayString, monthString, yearString] = value.split('/')
-  const day = Number(dayString)
-  const month = Number(monthString)
-  const year = Number(yearString)
-
-  if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31) {
-    return false
-  }
-
-  const date = new Date(year, month - 1, day)
-  const today = new Date()
-
-  return (
-    date.getFullYear() === year &&
-    date.getMonth() === month - 1 &&
-    date.getDate() === day &&
-    date <= today
-  )
-}
+import {
+  formatBirthDate,
+  formatPhone,
+  isValidBirthDate,
+  isValidEmail,
+  isValidPhone,
+  normalizeText,
+} from '../utils/formValidation'
 
 function buildInitialForm(mode) {
   if (mode === 'simplified') {
@@ -185,7 +118,7 @@ function CampaignForm({
     setStatusMessage('')
     setErrorMessage('')
 
-    if (!isValidPhoneBR(form.whatsapp)) {
+    if (!isValidPhone(form.whatsapp)) {
       setErrorMessage('Informe um WhatsApp valido antes de enviar.')
       return
     }
@@ -297,7 +230,7 @@ function CampaignForm({
 
                 if (digits.length > 0 && digits.length < 10) {
                   setPhoneError('Telefone incompleto')
-                } else if (digits.length >= 10 && !isValidPhoneBR(masked)) {
+                } else if (digits.length >= 10 && !isValidPhone(masked)) {
                   setPhoneError('Telefone invalido')
                 } else {
                   setPhoneError('')

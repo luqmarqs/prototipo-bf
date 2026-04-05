@@ -237,6 +237,97 @@ img {
   border-color: rgba(247, 6, 167, 0.28);
 }
 
+/* ── Header actions wrapper ── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+/* ── Hamburger toggle (desktop: hidden) ── */
+.mobile-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(247, 6, 167, 0.22);
+  background: rgba(247, 6, 167, 0.06);
+  color: #16111d;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.hamburger {
+  display: block;
+  position: relative;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: background 220ms ease;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 240ms ease, top 200ms ease, bottom 200ms ease;
+}
+
+.hamburger::before { top: -6px; }
+.hamburger::after  { bottom: -6px; }
+
+.hamburger-open { background: transparent; }
+.hamburger-open::before { top: 0; transform: rotate(45deg); }
+.hamburger-open::after  { bottom: 0; transform: rotate(-45deg); }
+
+/* ── Nav overlay backdrop ── */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  background: rgba(20, 15, 32, 0.5);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* ── Mobile nav close button (desktop: hidden) ── */
+.nav-close-btn {
+  display: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(247, 6, 167, 0.1);
+  font-size: 1.1rem;
+  color: #16111d;
+  cursor: pointer;
+}
+
+/* ── CTA inside mobile nav drawer (desktop: hidden) ── */
+.nav-mobile-cta {
+  display: none;
+}
+
+/* ── Floating mobile CTA pill (desktop: hidden) ── */
+.mobile-cta-float {
+  display: none;
+}
+
 .nav-dropdown {
   position: relative;
 }
@@ -291,8 +382,7 @@ img {
 }
 
 .deferred-section {
-  content-visibility: auto;
-  contain-intrinsic-size: 900px;
+  /* content-visibility: auto removido — causava sumiço de seções no mobile */
 }
 
 .page-hero-overlay {
@@ -959,6 +1049,45 @@ img {
 
 .news-actions {
   margin-top: 1rem;
+}
+
+.news-cta-section {
+  padding-top: 0;
+}
+
+.news-cta-card {
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(247, 6, 167, 0.1), rgba(102, 12, 173, 0.08));
+  border: 1px solid rgba(247, 6, 167, 0.18);
+  padding: 2.4rem;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 0 16px 40px rgba(64, 16, 95, 0.08);
+}
+
+.news-cta-label {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-primary, #f706a7);
+}
+
+.news-cta-title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.3rem, 4vw, 1.9rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.news-cta-text {
+  margin: 0 0 1.5rem;
+  color: rgba(22, 17, 29, 0.72);
+  line-height: 1.65;
+  font-size: 0.97rem;
 }
 
 .news-detail {
@@ -1632,7 +1761,21 @@ a.event-location:hover {
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 10px 28px rgba(64, 16, 95, 0.08);
-  padding: 1rem;
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.mandates-news-image {
+  width: 100%;
+  height: 180px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.mandates-news-content {
+  display: grid;
+  gap: 0.35rem;
 }
 
 .mandates-news-card small {
@@ -1962,10 +2105,138 @@ a.event-location:hover {
 }
 
 @media (max-width: 759px) {
-  .header-row {
-    align-items: stretch;
+  /* ── Seções: menos padding no mobile ── */
+  .section {
+    padding: 2.6rem 0;
   }
 
+  /* ── Page: espaço para o floating CTA ── */
+  .page {
+    padding-bottom: 5rem;
+  }
+
+  /* ── Header: linha única sem quebra ── */
+  .header-row {
+    align-items: center;
+    flex-wrap: nowrap;
+    min-height: 64px;
+    padding: 0.6rem 0;
+  }
+
+  /* ── Desktop CTA escondido no header mobile ── */
+  .header-cta {
+    display: none;
+  }
+
+  /* ── Hamburger visível ── */
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  /* ── Nav: drawer deslizante da direita ── */
+  .main-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(300px, 82vw);
+    z-index: 45;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+    padding: 4.5rem 1.1rem 2rem;
+    background: rgba(252, 246, 250, 0.99);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: -20px 0 60px rgba(64, 16, 95, 0.22);
+    transform: translateX(100%);
+    transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    border-radius: 0;
+    border: none;
+    border-left: 1px solid rgba(247, 6, 167, 0.12);
+  }
+
+  .main-nav.nav-open {
+    transform: translateX(0);
+  }
+
+  /* ── Botão fechar dentro do drawer ── */
+  .nav-close-btn {
+    display: flex;
+  }
+
+  /* ── CTA no rodapé do drawer ── */
+  .nav-mobile-cta {
+    display: block;
+    margin-top: auto;
+    padding-top: 1.5rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  /* ── Links do nav maiores para toque ── */
+  .nav-link {
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  /* ── Dropdown dentro do drawer ── */
+  .nav-dropdown {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .nav-dropdown-menu {
+    position: static;
+    display: none;
+    min-width: 0;
+    box-shadow: none;
+    background: rgba(247, 6, 167, 0.04);
+    border-radius: 10px;
+    padding: 0.25rem 0.35rem;
+    border: 1px solid rgba(247, 6, 167, 0.1);
+  }
+
+  /* ── Floating CTA pill ── */
+  .mobile-cta-float {
+    display: flex;
+    position: fixed;
+    bottom: 1.2rem;
+    right: 1.2rem;
+    z-index: 40;
+    background: linear-gradient(135deg, var(--color-primary, #f706a7), var(--color-primary-strong, #660cad));
+    color: #ffffff !important;
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
+    font-weight: 800;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.9rem 1.6rem;
+    border-radius: 999px;
+    box-shadow: 0 8px 28px rgba(247, 6, 167, 0.45);
+    align-items: center;
+    white-space: nowrap;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .mobile-cta-float:active {
+    transform: scale(0.96);
+    box-shadow: 0 4px 14px rgba(247, 6, 167, 0.4);
+  }
+
+  /* ── Hero ── */
+  .page-hero-copy {
+    padding: 0;
+  }
+
+  /* ── Campaign hero ── */
   .campaign-hero-copy h1 {
     font-size: clamp(1.65rem, 8vw, 2.2rem);
     line-height: 1.15;
@@ -1981,36 +2252,58 @@ a.event-location:hover {
     text-align: center;
   }
 
-  .main-nav {
-    order: 3;
-    width: 100%;
-    overflow: visible;
-  }
-
-  .nav-dropdown {
-    display: grid;
-    gap: 0.3rem;
-  }
-
-  .nav-dropdown-menu {
-    position: static;
-    display: none;
-    min-width: 0;
-    box-shadow: none;
-    background: rgba(247, 238, 245, 0.65);
-  }
-
-  .brand-name {
-    letter-spacing: 0.18em;
-  }
-
-  .page-hero-copy {
-    padding: 0;
-  }
-
+  /* ── Feature card ── */
   .feature-brand-card {
     width: min(190px, 60%);
     right: 0.75rem;
     bottom: 0.75rem;
+  }
+
+  /* ── Brand: overflow safe no mobile ── */
+  .brand {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .brand-logo {
+    width: clamp(56px, 12vw, 80px);
+  }
+
+  .brand-name {
+    letter-spacing: 0.18em;
+    font-size: 0.62rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Form ── */
+  .form-shell {
+    padding: 1.2rem;
+    border-radius: 18px;
+  }
+
+  .lead-form input:not([type="checkbox"]),
+  .lead-form select,
+  .lead-form textarea,
+  .form-section input:not([type="checkbox"]),
+  .form-section select {
+    font-size: 1rem; /* evita zoom automático no iOS (mínimo 16px) */
+  }
+
+  .form-section .form-card {
+    padding: 1.2rem;
+    border-radius: 18px;
+  }
+
+  /* ── News featured card: imagem menor ── */
+  .news-featured-image {
+    max-height: 220px;
+    object-fit: cover;
+  }
+
+  /* ── Section head ── */
+  .section-head {
+    margin-bottom: 1.2rem;
   }
 }

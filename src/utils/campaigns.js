@@ -37,19 +37,23 @@ const CAMPAIGN_BY_SLUG_QUERY = `*[_type == "campaign" && slug.current == $slug][
 }`
 
 export async function fetchActiveCampaigns(limit = 6) {
-  const campaigns = await sanityClient.fetch(CAMPAIGNS_QUERY, { limit })
+  try {
+    const campaigns = await sanityClient.fetch(CAMPAIGNS_QUERY, { limit })
 
-  return campaigns
-    .filter((campaign) => campaign.slug)
-    .map((campaign) => ({
-      id: campaign._id,
-      slug: campaign.slug,
-      type: campaign.type,
-      title: campaign.title,
-      description: campaign.description,
-      imageUrl: campaign.imageUrl,
-      ctaLabel: campaign.ctaLabel,
-    }))
+    return campaigns
+      .filter((campaign) => campaign.slug)
+      .map((campaign) => ({
+        id: campaign._id,
+        slug: campaign.slug,
+        type: campaign.type,
+        title: campaign.title,
+        description: campaign.description,
+        imageUrl: campaign.imageUrl,
+        ctaLabel: campaign.ctaLabel,
+      }))
+  } catch {
+    return []
+  }
 }
 
 export async function fetchCampaignBySlug(slug) {
@@ -57,5 +61,9 @@ export async function fetchCampaignBySlug(slug) {
     return null
   }
 
-  return sanityClient.fetch(CAMPAIGN_BY_SLUG_QUERY, { slug })
+  try {
+    return await sanityClient.fetch(CAMPAIGN_BY_SLUG_QUERY, { slug })
+  } catch {
+    return null
+  }
 }

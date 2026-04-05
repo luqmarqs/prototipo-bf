@@ -32,25 +32,30 @@ export async function fetchLatestNews(limit = 3) {
 
 export async function fetchNewsPage({ offset = 0, limit = 6 } = {}) {
   const end = offset + limit
-  const [posts, total] = await Promise.all([
-    sanityClient.fetch(NEWS_LIST_QUERY, { offset, end }),
-    sanityClient.fetch(NEWS_COUNT_QUERY),
-  ])
 
-  return {
-    total,
-    items: posts
-      .filter((post) => post.slug)
-      .map((post) => ({
-        id: post._id,
-        title: post.title,
-        slug: post.slug,
-        featured: Boolean(post.featured),
-        excerpt: post.excerpt,
-        author: post.author,
-        imageUrl: post.imageUrl,
-        publishedAt: post.publishedAt,
-      })),
+  try {
+    const [posts, total] = await Promise.all([
+      sanityClient.fetch(NEWS_LIST_QUERY, { offset, end }),
+      sanityClient.fetch(NEWS_COUNT_QUERY),
+    ])
+
+    return {
+      total,
+      items: posts
+        .filter((post) => post.slug)
+        .map((post) => ({
+          id: post._id,
+          title: post.title,
+          slug: post.slug,
+          featured: Boolean(post.featured),
+          excerpt: post.excerpt,
+          author: post.author,
+          imageUrl: post.imageUrl,
+          publishedAt: post.publishedAt,
+        })),
+    }
+  } catch {
+    return { total: 0, items: [] }
   }
 }
 
@@ -59,5 +64,9 @@ export async function fetchPostBySlug(slug) {
     return null
   }
 
-  return sanityClient.fetch(POST_BY_SLUG_QUERY, { slug })
+  try {
+    return await sanityClient.fetch(POST_BY_SLUG_QUERY, { slug })
+  } catch {
+    return null
+  }
 }

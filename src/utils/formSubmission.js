@@ -52,23 +52,38 @@ async function submitToGoogleForms(endpoint, googleFormsConfig, formValues) {
     )
   }
 
-  await fetch(endpoint, {
-    method: 'POST',
-    mode: 'no-cors',
-    body: data,
-  })
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 10000)
+
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: data,
+      signal: controller.signal,
+    })
+  } finally {
+    clearTimeout(timeoutId)
+  }
 }
 
 async function submitToJsonApi(endpoint, jsonApiConfig, formValues) {
   const method = jsonApiConfig?.method || 'POST'
   const headers = jsonApiConfig?.headers || { 'Content-Type': 'application/json' }
   const payload = buildJsonPayload(formValues, jsonApiConfig?.fieldMap)
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 10000)
 
-  await fetch(endpoint, {
-    method,
-    headers,
-    body: JSON.stringify(payload),
-  })
+  try {
+    await fetch(endpoint, {
+      method,
+      headers,
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    })
+  } finally {
+    clearTimeout(timeoutId)
+  }
 }
 
 export async function submitFormData(formIntegration, formValues) {

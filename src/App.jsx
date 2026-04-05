@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import PrivacySection from './components/PrivacySection'
@@ -132,6 +133,10 @@ function AppShell() {
         privacyPolicy={landingConfig.privacyPolicy}
         onClose={() => setShowPrivacy(false)}
       />
+
+      <Link to="/#quero-participar" className="mobile-cta-float" aria-label="Quero apoiar a campanha">
+        {landingConfig.home.hero.primaryCta}
+      </Link>
     </div>
   )
 }
@@ -139,7 +144,9 @@ function AppShell() {
 function App() {
   return (
     <BrowserRouter>
-      <AppShell />
+      <ErrorBoundary>
+        <AppShell />
+      </ErrorBoundary>
     </BrowserRouter>
   )
 }

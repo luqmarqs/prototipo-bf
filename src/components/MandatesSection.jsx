@@ -114,14 +114,26 @@ function MandatesSection({ pageTitle, pageIntro, mandate }) {
               <div className="mandates-news-grid">
                 {newsItems.map((item) => (
                   <article key={item.id} className="mandates-news-card">
-                    <small>
-                      {formatNewsDate(item.publishedAt)}
-                      {item.author ? ` | ${item.author}` : ''}
-                    </small>
-                    <h4>{item.title}</h4>
-                    <Link to={`/noticias/${item.slug}`} className="inline-link">
-                      Ler materia
-                    </Link>
+                    {item.imageUrl ? (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="mandates-news-image"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : null}
+
+                    <div className="mandates-news-content">
+                      <small>
+                        {formatNewsDate(item.publishedAt)}
+                        {item.author ? ` | ${item.author}` : ''}
+                      </small>
+                      <h4>{item.title}</h4>
+                      <Link to={`/noticias/${item.slug}`} className="inline-link">
+                        Ler materia
+                      </Link>
+                    </div>
                   </article>
                 ))}
               </div>

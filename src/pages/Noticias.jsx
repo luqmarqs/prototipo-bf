@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import NewsSection from '../components/NewsSection'
 import landingConfig from '../config/landingConfig'
 import { fetchNewsPage } from '../utils/news'
@@ -93,6 +94,23 @@ function Noticias() {
           </div>
         </section>
       ) : null}
+
+      {!loading && (
+        <section className="section news-cta-section">
+          <div className="container">
+            <div className="news-cta-card">
+              <p className="news-cta-label">Fique por dentro de tudo</p>
+              <h2 className="news-cta-title">{landingConfig.metadata.brandName}</h2>
+              <p className="news-cta-text">
+                Cadastre-se para receber novidades, convites para eventos e acompanhar de perto as acoes da bancada.
+              </p>
+              <Link to="/#quero-participar" className="button button-primary">
+                Quero me cadastrar
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
     </>
   )
 }

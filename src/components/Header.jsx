@@ -4,7 +4,20 @@ import { NavLink, useLocation } from 'react-router-dom'
 function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
   const location = useLocation()
   const [openDropdown, setOpenDropdown] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
   const navRef = useRef(null)
+
+  useEffect(() => {
+    setMenuOpen(false)
+    setOpenDropdown(null)
+  }, [location.pathname])
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [menuOpen])
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -22,6 +35,11 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
     }
   }, [])
 
+  function closeAll() {
+    setMenuOpen(false)
+    setOpenDropdown(null)
+  }
+
   return (
     <header className="site-header">
       <div className="container header-row">
@@ -29,13 +47,27 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
           to="/"
           className="brand"
           aria-label={`Ir para inicio - ${brandName}`}
-          onClick={() => setOpenDropdown(null)}
+          onClick={closeAll}
         >
           {logo ? <img src={logo} alt="" className="brand-logo" /> : null}
           <span className="brand-name">{brandName}</span>
         </NavLink>
 
-        <nav className="main-nav" aria-label="Navegacao principal" ref={navRef}>
+        <nav
+          id="main-nav"
+          className={menuOpen ? 'main-nav nav-open' : 'main-nav'}
+          aria-label="Navegacao principal"
+          ref={navRef}
+        >
+          <button
+            type="button"
+            className="nav-close-btn"
+            aria-label="Fechar menu"
+            onClick={() => setMenuOpen(false)}
+          >
+            ✕
+          </button>
+
           {navigation.map((item) => {
             if (item.children?.length) {
               const dropdownActive = item.children.some((child) =>
@@ -63,7 +95,7 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
                       <NavLink
                         key={child.path}
                         to={child.path}
-                        onClick={() => setOpenDropdown(null)}
+                        onClick={closeAll}
                         className={({ isActive }) =>
                           isActive
                             ? 'nav-link nav-link-active nav-dropdown-link'
@@ -82,7 +114,7 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
               <NavLink
                 key={item.path}
                 to={item.path}
-                onClick={() => setOpenDropdown(null)}
+                onClick={closeAll}
                 className={({ isActive }) =>
                   isActive ? 'nav-link nav-link-active' : 'nav-link'
                 }
@@ -91,19 +123,51 @@ function Header({ navigation, ctaLabel, onPrimaryCta, logo, brandName }) {
               </NavLink>
             )
           })}
+
+          <button
+            type="button"
+            className="button button-primary nav-mobile-cta"
+            onClick={() => {
+              closeAll()
+              onPrimaryCta()
+            }}
+          >
+            {ctaLabel}
+          </button>
         </nav>
 
-        <button
-          type="button"
-          className="button button-primary"
-          onClick={() => {
-            setOpenDropdown(null)
-            onPrimaryCta()
-          }}
-        >
-          {ctaLabel}
-        </button>
+        <div className="header-actions">
+          <button
+            type="button"
+            className="button button-primary header-cta"
+            onClick={() => {
+              closeAll()
+              onPrimaryCta()
+            }}
+          >
+            {ctaLabel}
+          </button>
+
+          <button
+            type="button"
+            className="mobile-menu-toggle"
+            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={menuOpen}
+            aria-controls="main-nav"
+            onClick={() => setMenuOpen((prev) => !prev)}
+          >
+            <span className={menuOpen ? 'hamburger hamburger-open' : 'hamburger'} aria-hidden="true" />
+          </button>
+        </div>
       </div>
+
+      {menuOpen && (
+        <div
+          className="nav-overlay"
+          aria-hidden="true"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
     </header>
   )
 }
