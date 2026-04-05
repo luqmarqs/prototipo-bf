@@ -2207,12 +2207,13 @@ a.event-location:hover {
 
   /* ── Floating CTA pill ── */
   .mobile-cta-float {
-    display: inline-flex;
+    display: flex;
     position: fixed;
     bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 1rem;
+    right: 1rem;
     z-index: 40;
+    justify-content: center;
     background: linear-gradient(135deg, var(--color-primary, #f706a7), var(--color-primary-strong, #660cad));
     color: #ffffff !important;
     font-family: 'Montserrat', 'Segoe UI', sans-serif;
@@ -2221,13 +2222,9 @@ a.event-location:hover {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     text-decoration: none;
-    padding: 0.95rem 2.2rem;
+    padding: 0.95rem 1.5rem;
     border-radius: 999px;
     box-shadow: 0 8px 28px rgba(247, 6, 167, 0.45);
-    white-space: nowrap;
-    max-width: calc(100vw - 2rem);
-    overflow: hidden;
-    text-overflow: ellipsis;
     transition: box-shadow 180ms ease;
   }
 
