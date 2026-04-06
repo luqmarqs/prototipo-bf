@@ -61,3 +61,7 @@ dist-ssr
 # Skill CLI output
 skills/
 skills-lock.json
+
+# Lighthouse temporary files
+.tmp/
+lighthouse-mobile-*.json
