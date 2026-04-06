@@ -1996,12 +1996,14 @@ a.event-location:hover {
 .modal {
   position: relative;
   width: min(100%, 720px);
-  max-height: 80vh;
+  max-height: 80dvh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   border-radius: 20px;
   border: 1px solid rgba(247, 6, 167, 0.16);
   background: #ffffff;
   padding: 1.5rem;
+  padding-top: 3.5rem;
 }
 
 .modal h2 {
