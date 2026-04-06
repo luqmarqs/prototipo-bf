@@ -1,3 +1,34 @@
+/**
+ * landingConfig.js — Configuração central do site.
+ *
+ * Este arquivo é a única fonte de verdade para todos os aspectos configuráveis
+ * do site público. Edite aqui para personalizar marca, tema, navegação,
+ * conteúdo das páginas e integração de formulários.
+ *
+ * Seções principais:
+ *
+ * @property {object} metadata       - Nome da marca, candidata, cidade, slogan.
+ * @property {object} assets         - Caminhos de imagens e favicon (pasta /public).
+ * @property {object} theme          - 15 cores expostas como CSS custom properties (--color-*).
+ * @property {object[]} navigation   - Links do menu. Suporta `children` para dropdown.
+ * @property {object} tracking       - IDs de GA4 (measurementId) e Meta Pixel (pixelId).
+ * @property {object} share          - Texto padrão de compartilhamento no WhatsApp.
+ * @property {object} socialProof    - Indicadores, depoimentos, fotos e contador ao vivo.
+ * @property {object} home           - Configuração da página inicial (hero, campanhas, notícias).
+ * @property {object} aboutPage      - Biografia, história pessoal e lista de causas.
+ * @property {object} mandatesPage   - Projetos de lei municipais e estaduais.
+ * @property {object} proposalsPage  - Propostas temáticas (cards).
+ * @property {object} eventsPage     - Lista de eventos/agenda estática.
+ * @property {object[]} thematicLandings - Cards de campanhas temáticas para a home.
+ * @property {object} forms          - Título, campos, interesses e configuração da API.
+ * @property {object} privacyPolicy  - Texto completo da política LGPD.
+ * @property {object} footer         - Texto e link do Instagram.
+ *
+ * Configuração do formulário (forms.api):
+ * - provider "google-forms": usa FormData + no-cors para Google Forms legado.
+ * - provider "json-api": usa JSON para /api/leads (Vercel Function) — padrão.
+ */
+
 const leadsApiEndpoint = import.meta.env.VITE_LEADS_API_ENDPOINT || '/api/leads'
 
 const landingConfig = {

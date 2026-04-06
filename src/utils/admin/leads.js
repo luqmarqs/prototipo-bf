@@ -1,3 +1,16 @@
+/**
+ * Utilitários para exibição e formatação de dados de leads no painel admin.
+ *
+ * `buildLeadColumns` extrai dinamicamente as colunas dos dados recebidos,
+ * garantindo que o painel funcione mesmo que o schema do banco evolua sem
+ * necessidade de alterar o frontend.
+ *
+ * Ordem de exibição definida por `PREFERRED_ORDER`: colunas conhecidas aparecem
+ * primeiro na ordem preferencial; colunas desconhecidas ficam ao final em ordem
+ * alfabética.
+ */
+
+/** Mapeamento de chave de coluna para label exibido na tabela e no export. */
 const COLUMN_LABELS = {
   created_at: 'Captado em',
   // legacy column names
@@ -48,6 +61,13 @@ const PREFERRED_ORDER = [
 
 const HIDDEN_KEYS = new Set(['id'])
 
+/**
+ * Retorna um identificador estável para um lead, usado como `key` React.
+ * Preferencialmente usa `id`; em fallback concatena email + created_at ou gera aleatório.
+ *
+ * @param {object} lead
+ * @returns {string}
+ */
 export function getLeadRowId(lead) {
   return String(lead.id || `${lead.email || 'lead'}-${lead.created_at || Math.random()}`)
 }
@@ -59,6 +79,15 @@ function prettifyKey(key) {
     .replace(/^./, (letter) => letter.toUpperCase())
 }
 
+/**
+ * Extrai as colunas visíveis a partir dos dados de leads, aplica a ordem preferencial
+ * e mapeia cada chave para seu label de exibição.
+ *
+ * Colunas em `HIDDEN_KEYS` (ex: `id`) são excluídas automaticamente.
+ *
+ * @param {object[]} rows - Array de objetos de lead.
+ * @returns {Array<{ key: string, label: string }>}
+ */
 export function buildLeadColumns(rows) {
   const keys = new Set()
 
@@ -95,6 +124,20 @@ export function buildLeadColumns(rows) {
     }))
 }
 
+/**
+ * Formata um valor de campo de lead para exibição na tabela ou no export.
+ *
+ * Regras:
+ * - `null` / `undefined` / string vazia → `"—"`
+ * - Arrays → valores unidos por `", "`
+ * - Booleanos → `"Sim"` / `"Nao"`
+ * - Objetos → JSON serializado
+ * - `created_at` → data formatada em pt-BR via `toLocaleString`
+ *
+ * @param {*} value - Valor bruto do campo.
+ * @param {string} key - Chave da coluna (usada para formatação especial de datas).
+ * @returns {string}
+ */
 export function formatLeadValue(value, key) {
   if (value === null || value === undefined || value === '') {
     return '—'

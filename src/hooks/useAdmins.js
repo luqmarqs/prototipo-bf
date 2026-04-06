@@ -1,3 +1,22 @@
+/**
+ * Hook de CRUD para usuários administradores.
+ *
+ * Carrega a lista de admins do Supabase e expõe funções para adicionar,
+ * ativar/desativar e remover usuários. Cada mutação recarrega a lista automaticamente
+ * via `reloadToken`.
+ *
+ * @param {object} [options]
+ * @param {boolean} [options.enabled=true] - Se false, não faz nenhuma requisição.
+ * @returns {{
+ *   admins: object[],
+ *   loading: boolean,
+ *   error: string,
+ *   refresh: () => void,
+ *   addAdmin: (email: string) => Promise<void>,
+ *   toggleStatus: (id: string, isActive: boolean) => Promise<void>,
+ *   removeAdmin: (id: string) => Promise<void>,
+ * }}
+ */
 import { useCallback, useEffect, useState } from 'react'
 import {
   addAdmin as addAdminService,

@@ -1,3 +1,33 @@
+/**
+ * Hook central de autenticação do painel administrativo.
+ *
+ * Responsabilidades:
+ * 1. Carrega a sessão existente no mount (via `supabase.auth.getSession`).
+ * 2. Chama `syncAdminUser` para vincular o `user_id` ao registro em `admin_users`
+ *    caso o usuário esteja fazendo login pela primeira vez com Google.
+ * 3. Chama `checkIsAdmin` para verificar se o usuário tem `is_active = true` no banco.
+ * 4. Escuta mudanças de auth state (`onAuthStateChange`) para detectar login/logout.
+ *
+ * Detalhe importante sobre `syncedRef`:
+ * O Supabase dispara `SIGNED_IN` repetidamente a cada refresh de token ou quando a
+ * janela volta ao foco. O `syncedRef` evita que o banco seja consultado novamente
+ * nesses re-disparos — o estado de admin já foi verificado na primeira vez.
+ *
+ * @returns {{
+ *   session: import('@supabase/supabase-js').Session | null,
+ *   user: import('@supabase/supabase-js').User | null,
+ *   email: string,
+ *   displayName: string,
+ *   avatarUrl: string,
+ *   loading: boolean,
+ *   error: string,
+ *   isAdmin: boolean,
+ *   hasConfig: boolean,
+ *   hasWhitelist: boolean,
+ *   whitelist: string[],
+ *   isAuthorized: boolean,
+ * }}
+ */
 import { useEffect, useRef, useState } from 'react'
 import { checkIsAdmin, syncAdminUser } from '../services/supabase/admins'
 import { getAdminWhitelist, isEmailAuthorized } from '../services/supabase/auth'

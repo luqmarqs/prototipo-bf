@@ -1,5 +1,19 @@
+/**
+ * Camada de acesso a dados para campanhas e seus respectivos leads.
+ *
+ * Diferença de fontes:
+ * - `lead_forms` (Supabase) — cadastro administrativo das campanhas (slug, nome, status)
+ * - `leads` (Supabase) — leads capturados, vinculados via `form_slug`
+ * - O hook `useCampaigns` usa o Sanity como fonte de verdade para a lista de campanhas
+ *   e consulta o Supabase apenas para as contagens.
+ */
 import { getSupabaseClient } from './client'
 
+/**
+ * Busca campanhas ativas da tabela `lead_forms` com a contagem de leads de cada uma.
+ *
+ * @returns {Promise<Array<{ id: string, name: string, slug: string, leadCount: number }>>}
+ */
 export async function fetchCampaigns() {
   const supabase = getSupabaseClient()
 
@@ -31,6 +45,13 @@ export async function fetchCampaigns() {
   }))
 }
 
+/**
+ * Busca uma campanha ativa pelo slug.
+ *
+ * @param {string} slug
+ * @returns {Promise<{ id: string, name: string, slug: string }>}
+ * @throws {Error} Se a campanha não for encontrada ou estiver inativa.
+ */
 export async function fetchCampaignBySlug(slug) {
   const supabase = getSupabaseClient()
 
@@ -45,6 +66,12 @@ export async function fetchCampaignBySlug(slug) {
   return data
 }
 
+/**
+ * Retorna métricas de leads para uma campanha específica: total e captados hoje.
+ *
+ * @param {string} formSlug - Slug da campanha.
+ * @returns {Promise<{ totalLeads: number, leadsToday: number }>}
+ */
 export async function fetchCampaignMetrics(formSlug) {
   const supabase = getSupabaseClient()
   const today = new Date()
@@ -71,6 +98,15 @@ export async function fetchCampaignMetrics(formSlug) {
   }
 }
 
+/**
+ * Retorna a contagem diária de leads para uma campanha nos últimos N dias.
+ * Dias sem registros são pré-preenchidos com zero para garantir continuidade no gráfico.
+ *
+ * @param {string} formSlug - Slug da campanha.
+ * @param {object} [options]
+ * @param {number} [options.days=30] - Janela de dias retroativos.
+ * @returns {Promise<Array<{ date: string, count: number }>>} Array ordenado por data (YYYY-MM-DD).
+ */
 export async function fetchCampaignLeadsByDay(formSlug, { days = 30 } = {}) {
   const supabase = getSupabaseClient()
   const from = new Date()
@@ -120,6 +156,21 @@ function applyCampaignLeadFilters(query, filters = {}) {
   return query
 }
 
+/**
+ * Busca leads paginados de uma campanha específica com filtros opcionais.
+ *
+ * @param {string} formSlug - Slug da campanha.
+ * @param {object} [params]
+ * @param {number} [params.page=1]
+ * @param {number} [params.pageSize=15]
+ * @param {string} [params.search] - Busca por nome, e-mail ou telefone.
+ * @param {string} [params.dateFrom] - Data inicial (YYYY-MM-DD).
+ * @param {string} [params.dateTo] - Data final (YYYY-MM-DD).
+ * @param {string} [params.utmSource] - Filtro por UTM source exato.
+ * @param {string} [params.sortColumn='created_at']
+ * @param {'asc'|'desc'} [params.sortDirection='desc']
+ * @returns {Promise<{ rows: object[], total: number }>}
+ */
 export async function fetchCampaignLeads(formSlug, {
   page = 1,
   pageSize = 15,
@@ -149,6 +200,13 @@ export async function fetchCampaignLeads(formSlug, {
   return { rows: data || [], total: count || 0 }
 }
 
+/**
+ * Busca todos os leads de uma campanha sem paginação para exportação (máx. 5000).
+ *
+ * @param {string} formSlug
+ * @param {object} [filters] - Mesmos filtros de `fetchCampaignLeads`.
+ * @returns {Promise<object[]>}
+ */
 export async function fetchCampaignLeadsForExport(formSlug, filters = {}) {
   const supabase = getSupabaseClient()
 
@@ -166,6 +224,13 @@ export async function fetchCampaignLeadsForExport(formSlug, filters = {}) {
   return data || []
 }
 
+/**
+ * Retorna os valores distintos de `utm_source` dos leads de uma campanha.
+ * Usado para popular o dropdown de filtro por origem no painel.
+ *
+ * @param {string} formSlug
+ * @returns {Promise<string[]>} Lista de UTM sources ordenada alfabeticamente.
+ */
 export async function fetchCampaignUtmSources(formSlug) {
   const supabase = getSupabaseClient()
 

@@ -1,3 +1,26 @@
+/**
+ * Envio do formulário de captação de leads.
+ *
+ * Suporta dois providers configurados em `landingConfig.forms.api`:
+ *
+ * - `"google-forms"`: envia via FormData com `mode: 'no-cors'` para um endpoint do
+ *   Google Forms. Não há resposta legível — erros de rede são silenciosos.
+ *   Usado como integração legada.
+ *
+ * - `"json-api"` (padrão): envia JSON para `/api/leads` (Vercel Function).
+ *   A resposta é verificada e erros do servidor são propagados.
+ *
+ * Ambos os paths têm timeout de 10 segundos via `AbortController`.
+ */
+
+/**
+ * Mapeia as chaves do formulário para as chaves do payload JSON,
+ * aplicando `fieldMap` como dicionário de renomeação.
+ *
+ * @param {object} formValues - Valores brutos do formulário.
+ * @param {object} [fieldMap] - Mapeamento de chave-original → chave-destino.
+ * @returns {object}
+ */
 function buildJsonPayload(formValues, fieldMap = {}) {
   return Object.entries(formValues).reduce((payload, [key, value]) => {
     payload[fieldMap[key] || key] = Array.isArray(value) ? value : value ?? ''
@@ -99,6 +122,20 @@ async function submitToJsonApi(endpoint, jsonApiConfig, formValues) {
   }
 }
 
+/**
+ * Ponto de entrada para envio do formulário.
+ * Roteia para o provider correto com base em `formIntegration.provider`.
+ *
+ * @param {object} formIntegration - Configuração da integração (de `landingConfig.forms.api`).
+ * @param {'google-forms'|'json-api'} formIntegration.provider
+ * @param {string} formIntegration.endpoint - URL de destino.
+ * @param {object} [formIntegration.googleForms] - Config específica do Google Forms.
+ * @param {object} [formIntegration.jsonApi] - Config específica do JSON API.
+ * @param {object} formValues - Dados do formulário preenchido pelo usuário.
+ * @returns {Promise<void>}
+ * @throws {Error} Se o provider for desconhecido, o endpoint não estiver definido,
+ *   ou a requisição falhar (apenas para `json-api`).
+ */
 export async function submitFormData(formIntegration, formValues) {
   const provider = formIntegration?.provider || 'google-forms'
   const endpoint = formIntegration?.endpoint

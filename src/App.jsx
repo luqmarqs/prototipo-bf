@@ -1,3 +1,19 @@
+/**
+ * App.jsx — Shell principal da aplicação.
+ *
+ * `AppShell` é o componente interno que precisa estar dentro do `BrowserRouter`
+ * para poder usar `useLocation` e `useNavigate`. Ele é responsável por:
+ *
+ * - Aplicar as CSS custom properties do tema (de `landingConfig.theme`) no elemento raiz.
+ * - Inicializar analytics (GA4 + Meta Pixel) uma única vez no mount.
+ * - Rastrear page views a cada mudança de rota.
+ * - Rolar para o topo em mudanças de página (exceto quando há hash na URL).
+ * - Observar a visibilidade do footer para ocultar o botão CTA flutuante mobile.
+ * - Renderizar Header e Footer apenas em rotas públicas (não em `/admin/*`).
+ * - Carregar todas as páginas de forma lazy (code splitting por rota).
+ *
+ * `App` envolve `AppShell` em `BrowserRouter` + `ErrorBoundary`.
+ */
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import AdminRoute from './components/admin/AdminRoute'

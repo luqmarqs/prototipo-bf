@@ -145,7 +145,7 @@ function AdminLeads() {
         errorFeedback.show('Nenhum lead encontrado para exportar com os filtros atuais.', 'error')
         return
       }
-      exportLeadsToXlsx(rowsToExport, `leads-${new Date().toISOString().slice(0, 10)}.xlsx`)
+      await exportLeadsToXlsx(rowsToExport, `leads-${new Date().toISOString().slice(0, 10)}.xlsx`)
       feedback.show(selectedIds.length > 0 ? 'Excel exportado com os leads selecionados.' : 'Excel exportado com sucesso.')
     } catch (exportError) {
       errorFeedback.show(exportError.message || 'Não foi possível exportar o Excel.', 'error')

@@ -129,7 +129,7 @@ function EventCard({ eventItem, onAction }) {
               <a
                 href={mapsUrl}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="event-location"
                 title="Abrir no Google Maps"
               >
@@ -151,7 +151,7 @@ function EventCard({ eventItem, onAction }) {
               <a
                 href={eventItem.externalLink}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="button button-primary"
               >
                 Saiba mais
@@ -171,7 +171,7 @@ function EventCard({ eventItem, onAction }) {
                 <a
                   href={gCalUrl}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="button event-gcal-btn"
                   title="Adicionar ao Google Agenda"
                 >
@@ -187,7 +187,7 @@ function EventCard({ eventItem, onAction }) {
                 <a
                   href={waUrl}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="button event-wa-btn"
                   title="Convidar pelo WhatsApp"
                 >

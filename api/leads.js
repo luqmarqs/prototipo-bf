@@ -1,8 +1,40 @@
+/**
+ * api/leads.js — Vercel Serverless Function para captação de leads.
+ *
+ * Esta função é o único ponto de escrita no banco de dados que usa a
+ * SUPABASE_SERVICE_ROLE_KEY (server-only). Nunca exponha essa chave no frontend.
+ *
+ * Responsabilidades:
+ * 1. Gerenciar CORS (origens permitidas via LEADS_ALLOWED_ORIGINS).
+ * 2. Sanitizar o payload recebido (apenas chaves em ALLOWED_KEYS são aceitas).
+ * 3. Validar campos obrigatórios (nome, email, telefone, consentimento LGPD).
+ * 4. Enriquecer o payload com aliases PT/EN, UTMs e timestamps.
+ * 5. Inserir em public.leads com fallback automático para colunas ausentes:
+ *    se o Supabase retornar "column not found", remove a coluna e repete a inserção.
+ *
+ * Método aceito: POST (Content-Type: application/json)
+ * Resposta de sucesso: 201 { ok: true, lead: { id, created_at } }
+ */
+
 /* global process */
 
 import { createClient } from '@supabase/supabase-js'
 
 const ALLOWED_METHODS = new Set(['POST', 'OPTIONS'])
+const MAX_CONTENT_LENGTH_BYTES = Number(process.env.LEADS_MAX_CONTENT_LENGTH_BYTES || 32 * 1024)
+const RATE_LIMIT_WINDOW_MS = Number(process.env.LEADS_RATE_LIMIT_WINDOW_MS || 10 * 60 * 1000)
+const RATE_LIMIT_MAX_REQUESTS = Number(process.env.LEADS_RATE_LIMIT_MAX_REQUESTS || 30)
+const STRING_LIMITS = {
+  name: 120,
+  email: 160,
+  phone: 32,
+  birthDate: 16,
+  state: 64,
+  city: 120,
+  district: 120,
+  source: 120,
+  page: 120,
+}
 const ALLOWED_KEYS = new Set([
   'name',
   'email',
@@ -17,11 +49,76 @@ const ALLOWED_KEYS = new Set([
   'page',
   'consent',
 ])
+const rateLimitStore = new Map()
 
-function setCorsHeaders(response) {
-  response.setHeader('Access-Control-Allow-Origin', '*')
+function getClientIp(request) {
+  const forwardedFor = String(request.headers['x-forwarded-for'] || '')
+  const realIp = String(request.headers['x-real-ip'] || '')
+  const firstForwarded = forwardedFor.split(',').map((item) => item.trim()).find(Boolean)
+  return firstForwarded || realIp || 'unknown'
+}
+
+function isRateLimited(clientIp) {
+  const now = Date.now()
+  const bucket = rateLimitStore.get(clientIp)
+
+  if (!bucket || now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitStore.set(clientIp, { count: 1, windowStart: now })
+    return false
+  }
+
+  bucket.count += 1
+  if (bucket.count > RATE_LIMIT_MAX_REQUESTS) {
+    return true
+  }
+
+  return false
+}
+
+function cleanupRateLimitStore() {
+  const cutoff = Date.now() - RATE_LIMIT_WINDOW_MS
+  for (const [ip, bucket] of rateLimitStore.entries()) {
+    if (bucket.windowStart < cutoff) {
+      rateLimitStore.delete(ip)
+    }
+  }
+}
+
+function parseAllowedOrigins(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function setCorsHeaders(request, response) {
+  const requestOrigin = request.headers.origin
+  const allowlist = parseAllowedOrigins(process.env.LEADS_ALLOWED_ORIGINS)
+
+  if (allowlist.length === 0) {
+    response.setHeader('Access-Control-Allow-Origin', '*')
+  } else if (requestOrigin && allowlist.includes(requestOrigin)) {
+    response.setHeader('Access-Control-Allow-Origin', requestOrigin)
+    response.setHeader('Vary', 'Origin')
+  }
+
   response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+}
+
+function isOriginAllowed(request) {
+  const requestOrigin = request.headers.origin
+  const allowlist = parseAllowedOrigins(process.env.LEADS_ALLOWED_ORIGINS)
+
+  if (allowlist.length === 0) {
+    return true
+  }
+
+  if (!requestOrigin) {
+    return true
+  }
+
+  return allowlist.includes(requestOrigin)
 }
 
 function getSupabaseAdminClient() {
@@ -32,7 +129,6 @@ function getSupabaseAdminClient() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     || process.env.SUPABASE_SERVICE_ROLE
     || process.env.SUPABASE_SECRET_KEY
-    || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !serviceRoleKey) {
     const missing = []
@@ -58,12 +154,16 @@ function sanitizeLeadPayload(payload) {
     }
 
     if (typeof value === 'string') {
-      sanitized[key] = value.trim()
+      const limit = STRING_LIMITS[key] || 500
+      sanitized[key] = value.trim().slice(0, limit)
       return
     }
 
     if (Array.isArray(value)) {
-      sanitized[key] = value.map((item) => String(item).trim()).filter(Boolean)
+      sanitized[key] = value
+        .slice(0, 20)
+        .map((item) => String(item).trim().slice(0, 120))
+        .filter(Boolean)
       return
     }
 
@@ -218,7 +318,8 @@ function validateLead(payload) {
 }
 
 export default async function handler(request, response) {
-  setCorsHeaders(response)
+  setCorsHeaders(request, response)
+  cleanupRateLimitStore()
 
   if (!ALLOWED_METHODS.has(request.method)) {
     response.status(405).json({ error: 'Metodo nao permitido.' })
@@ -227,6 +328,23 @@ export default async function handler(request, response) {
 
   if (request.method === 'OPTIONS') {
     response.status(204).end()
+    return
+  }
+
+  if (!isOriginAllowed(request)) {
+    response.status(403).json({ error: 'Origem nao permitida.' })
+    return
+  }
+
+  const contentLength = Number(request.headers['content-length'] || 0)
+  if (Number.isFinite(contentLength) && contentLength > MAX_CONTENT_LENGTH_BYTES) {
+    response.status(413).json({ error: 'Payload muito grande.' })
+    return
+  }
+
+  const clientIp = getClientIp(request)
+  if (isRateLimited(clientIp)) {
+    response.status(429).json({ error: 'Muitas requisicoes. Tente novamente em alguns minutos.' })
     return
   }
 
@@ -243,12 +361,14 @@ export default async function handler(request, response) {
     const { data, error } = await insertLeadWithFallback(supabase, payload)
 
     if (error) {
-      response.status(500).json({ error: error.message || 'Falha ao gravar lead.' })
+      console.error('[api/leads] insert error', error)
+      response.status(500).json({ error: 'Falha ao gravar lead.' })
       return
     }
 
     response.status(201).json({ ok: true, lead: data })
   } catch (error) {
-    response.status(500).json({ error: error.message || 'Erro interno ao processar lead.' })
+    console.error('[api/leads] unexpected error', error)
+    response.status(500).json({ error: 'Erro interno ao processar lead.' })
   }
 }

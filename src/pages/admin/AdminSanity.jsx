@@ -24,7 +24,7 @@ function AdminSanity() {
         <a
           href={SANITY_STUDIO_URL}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           className="button admin-primary-button"
         >
           Editar conteudo do site no Sanity Studio

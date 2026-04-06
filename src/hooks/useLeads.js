@@ -1,3 +1,25 @@
+/**
+ * Hook para busca paginada de leads com filtros, métricas e atualização em tempo real.
+ *
+ * O re-fetch é disparado automaticamente quando `filters` ou `reloadToken` mudam.
+ * A subscrição realtime incrementa `reloadToken` ao detectar mudanças na tabela,
+ * mas apenas quando a aba está visível (`!document.hidden`) para evitar
+ * recargas desnecessárias ao retornar de outra aba.
+ *
+ * @param {object} filters - Filtros passados para `fetchLeads` (search, dateFrom, dateTo, page, etc.).
+ * @param {object} [options]
+ * @param {boolean} [options.enabled=true] - Se false, não faz nenhuma requisição.
+ * @param {boolean} [options.realtime=true] - Se false, desativa a subscrição realtime.
+ * @returns {{
+ *   rows: object[],
+ *   total: number,
+ *   metrics: { totalLeads: number, leadsToday: number },
+ *   loading: boolean,
+ *   refreshing: boolean,
+ *   error: string,
+ *   refresh: () => void,
+ * }}
+ */
 import { useEffect, useState } from 'react'
 import { fetchLeadMetrics, fetchLeads, subscribeToLeadChanges } from '../services/supabase/leads'
 

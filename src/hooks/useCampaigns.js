@@ -1,7 +1,19 @@
+/**
+ * Hook para carregar campanhas do Sanity com contagem de leads do Supabase.
+ *
+ * O Sanity é a fonte de verdade para a lista de campanhas (título, slug, imagem).
+ * O Supabase é consultado em paralelo para contar leads por `form_slug`.
+ * Usado pelo painel admin em `/admin/campanhas`.
+ */
 import { useEffect, useState } from 'react'
 import { getSupabaseClient } from '../services/supabase/client'
 import { fetchActiveCampaigns } from '../utils/campaigns'
 
+/**
+ * Busca campanhas ativas do Sanity e enriquece cada uma com a contagem de leads do Supabase.
+ *
+ * @returns {Promise<Array<{ id: string, name: string, slug: string, imageUrl: string, leadCount: number }>>}
+ */
 async function fetchCampaignsWithCounts() {
   // Source of truth for campaigns: Sanity CMS (same as public site)
   const sanityData = await fetchActiveCampaigns(50)
@@ -33,6 +45,11 @@ async function fetchCampaignsWithCounts() {
   }))
 }
 
+/**
+ * @param {object} [options]
+ * @param {boolean} [options.enabled=true]
+ * @returns {{ campaigns: Array, loading: boolean, error: string }}
+ */
 export function useCampaigns({ enabled = true } = {}) {
   const [campaigns, setCampaigns] = useState([])
   const [loading, setLoading] = useState(enabled)
